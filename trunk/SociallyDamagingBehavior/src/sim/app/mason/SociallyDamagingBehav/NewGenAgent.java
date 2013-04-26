@@ -31,9 +31,18 @@ public class NewGenAgent implements Steppable{
 			Agent ra=(Agent)all.get(i);
 			if(i< riprodurre)
 			{
+				if(state.random.nextBoolean())
+				{
+					float dna=ra.dna+state.random.nextFloat();
+					if(dna > 10) dna=10;
+					else ra.dna=dna;
+				}else
+				{
+					float dna=ra.dna-state.random.nextFloat();
+					if(dna < 0) dna=0;
+					else ra.dna=dna;
+				}
 				
-				float dna=ra.dna+state.random.nextFloat();
-				ra.dna=dna;
 				ra.fitness=state.random.nextInt(100);
 				
 			}else{
