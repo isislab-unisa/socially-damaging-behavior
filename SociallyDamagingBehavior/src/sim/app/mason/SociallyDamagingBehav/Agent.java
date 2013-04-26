@@ -1,14 +1,18 @@
 
 package sim.app.mason.SociallyDamagingBehav;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import sim.engine.*;
 import sim.field.continuous.*;
+import sim.portrayal.DrawInfo2D;
+import sim.portrayal.SimplePortrayal2D;
+import sim.portrayal.simple.OrientedPortrayal2D;
 import sim.util.*;
 import ec.util.*;
 
-public abstract class Agent implements Steppable, sim.portrayal.Orientable2D
+public abstract class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.portrayal.Orientable2D 
 {
 	private static final long serialVersionUID = 1;
 
@@ -17,7 +21,7 @@ public abstract class Agent implements Steppable, sim.portrayal.Orientable2D
 	public Continuous2D flockers;
 	public SociallyDamagingBehavior theFlock;
 	public boolean dead = false;
-	public Color behav_color;
+	public static Color behav_color;
 
 	/*SDB*/
 	public double fitness;
@@ -26,9 +30,11 @@ public abstract class Agent implements Steppable, sim.portrayal.Orientable2D
 	public abstract void action(SimState state,Bag neigh);
 	public abstract Double2D move(SimState state,Double2D loc);
 	public Agent(Double2D location,SimState state,float dna) { 
+//		super(new SimplePortrayal2D(), 0, 4.0,behav_color,OrientedPortrayal2D.SHAPE_COMPASS);
 		loc = location;
 		fitness=state.random.nextInt(100);
 		this.dna=dna;
+		behav_color=(dna<5)?Color.GREEN:Color.RED;
 	}
 
 	public Bag getNeighbors()
@@ -133,5 +139,11 @@ public abstract class Agent implements Steppable, sim.portrayal.Orientable2D
 	public void setDna(float dna) {
 		this.dna = dna;
 	}
+	
+	/*public final void draw(Object object, Graphics2D graphics, DrawInfo2D info){
+			graphics.setColor(behav_color);
+			super.draw(object, graphics, info);
+		
+	}*/
 
 }

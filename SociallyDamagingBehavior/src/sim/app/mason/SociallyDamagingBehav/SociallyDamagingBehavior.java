@@ -112,7 +112,6 @@ public class SociallyDamagingBehavior extends SimState
 			//Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
 			
 			Agent flocker = Behaviour.createAgent(location,this,dna);
-			flocker.behav_color=(flocker.dna<5)?Color.GREEN:Color.RED;
 			/*SDB*/
 			flockers.setObjectLocation(flocker, location);
 			flocker.flockers = flockers;
