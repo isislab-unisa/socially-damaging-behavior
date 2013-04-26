@@ -111,7 +111,7 @@ public class SociallyDamagingBehavior extends SimState
 			float dna=this.random.nextInt(10)+this.random.nextFloat();
 			//Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
 			
-			Agent flocker = Behaviour.createAgent(location,this,dna);
+			Agent flocker = new Agent(location,this,dna);
 			/*SDB*/
 			flockers.setObjectLocation(flocker, location);
 			flocker.flockers = flockers;
@@ -153,7 +153,7 @@ public class SociallyDamagingBehavior extends SimState
 			for(Object o:neigh)
 			{
 				Agent n_a=(Agent)o;
-				if(n_a instanceof Honest) H_neigh++;
+				if(n_a.behavior instanceof Honest) H_neigh++;
 				else DH_neigh++;
 				
 			}
