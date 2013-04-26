@@ -93,17 +93,12 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public void step(SimState state)
 	{      
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
-
-		if (dead) return;
+	//	if (dead) return;
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
 			loc = flock.flockers.getObjectLocation(this);
-	
-		
-	
 			Bag b = getNeighbors();
-	//
 			Double2D avoid = behavior.avoidance(this,b,flock.flockers);
 			Double2D cohe = behavior.cohesion(this,b,flock.flockers);
 			Double2D rand = randomness(flock.random);
@@ -122,28 +117,27 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			}
 			
 			behavior.action(this,state, b);
-		//	loc=move(state, loc);
 			lastd = new Double2D(dx,dy);
 			loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
 			flock.flockers.setObjectLocation(this, loc);
-		}else dead=true;
+		}//else this.dead=true;
 	}
-	class Direction extends ArrayList<Agent> implements Comparable
-	{
-		double dx;
-		double dy;
-		public Direction(double ddx,double ddy)
-		{
-			dx=ddx;
-			dy=ddy;
-		}
-		@Override
-		public int compareTo(Object o) {
-			if(((Direction)o).size() < this.size()) return -1;
-			else if(((Direction)o).size() > this.size()) return 1;
-			return 0;
-		}
-	}
+//	class Direction extends ArrayList<Agent> implements Comparable
+//	{
+//		double dx;
+//		double dy;
+//		public Direction(double ddx,double ddy)
+//		{
+//			dx=ddx;
+//			dy=ddy;
+//		}
+//		@Override
+//		public int compareTo(Object o) {
+//			if(((Direction)o).size() < this.size()) return -1;
+//			else if(((Direction)o).size() > this.size()) return 1;
+//			return 0;
+//		}
+//	}
 	public double getFitness() {
 		return fitness;
 	}

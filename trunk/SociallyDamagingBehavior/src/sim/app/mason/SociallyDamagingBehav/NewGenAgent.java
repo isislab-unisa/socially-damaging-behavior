@@ -1,5 +1,6 @@
 package sim.app.mason.SociallyDamagingBehav;
 
+import java.awt.Color;
 import java.util.Comparator;
 
 import sim.engine.Schedule;
@@ -15,7 +16,7 @@ public class NewGenAgent implements Steppable{
 		final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
 		if(state.schedule.getSteps()!=0 && state.schedule.getSteps()%flock.EPOCH==0)
 		{
-			System.out.println("NUOVA EPOCA!"+state.schedule.getSteps());
+		
 		
 			Bag all=flock.flockers.allObjects;
 			all.sort(new Comparator<Agent>() {
@@ -29,14 +30,12 @@ public class NewGenAgent implements Steppable{
 			});
 			int tot=all.size();
 			int riprodurre=(25*tot)/100;
-			
 			for (int i = 0; i < all.size(); i++) {
 				
 				Agent ra=(Agent)all.get(i);
-				ra.dead=false;
+				
 				if(i<riprodurre)
 				{
-					
 					if(state.random.nextBoolean())
 					{
 						float dna=ra.dna+state.random.nextFloat();
@@ -51,12 +50,16 @@ public class NewGenAgent implements Steppable{
 					
 					ra.fitness=state.random.nextInt(100);
 					
+					
 				}else{
 					float dna=state.random.nextInt(10)+state.random.nextFloat();
 					ra.fitness=state.random.nextInt(100);
 					ra.dna=dna;
 					//ra=new Agent(ra.loc, state, dna);
 				}
+				ra.dead=false;
+				ra.behavior=(ra.dna<5)?new Honest():new Dishonest();
+				ra.behav_color=(ra.dna<5)?Color.GREEN:Color.RED;
 				
 				
 			}

@@ -11,9 +11,9 @@ public class SociallyDamagingBehavior extends SimState
 	private static final long serialVersionUID = 1;
 	/*SDB*/
 	public static double DAMAGING_PAYOFF_PROB=0.5;
-	public static double DAMAGING_PAYOFF=1000.5;
+	public static double DAMAGING_PAYOFF=2.5;
 
-	public static double PUNISHIMENT_PROB=0.1;
+	public static double PUNISHIMENT_PROB=0.8;
 	public static Object PUNISHIMENT_STRICT=new Object();
 	public static Object PUNISHIMENT_FAIR=new Object();
 	public static Object PUNISHIMENT_LAX=new Object();
