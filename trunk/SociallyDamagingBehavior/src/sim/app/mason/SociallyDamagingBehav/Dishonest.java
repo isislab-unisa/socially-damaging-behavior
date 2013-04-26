@@ -1,5 +1,6 @@
 package sim.app.mason.SociallyDamagingBehav;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import sim.util.Bag;
 import sim.util.Double2D;
 
 public class Dishonest extends Agent{
+	public Color behav_color=Color.RED;
 
 	public Dishonest(Double2D location,SimState state,float dna) {
 		super(location,state,dna);

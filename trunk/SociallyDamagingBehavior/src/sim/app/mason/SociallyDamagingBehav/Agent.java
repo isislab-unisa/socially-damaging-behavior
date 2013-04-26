@@ -1,5 +1,6 @@
 
 package sim.app.mason.SociallyDamagingBehav;
+import java.awt.Color;
 import java.util.ArrayList;
 
 import sim.engine.*;
@@ -16,7 +17,7 @@ public abstract class Agent implements Steppable, sim.portrayal.Orientable2D
 	public Continuous2D flockers;
 	public SociallyDamagingBehavior theFlock;
 	public boolean dead = false;
-
+	public Color behav_color;
 
 	/*SDB*/
 	public double fitness;
@@ -67,36 +68,42 @@ public abstract class Agent implements Steppable, sim.portrayal.Orientable2D
 	}
 
 	public void step(SimState state)
-	{        
-		final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
-		loc = flock.flockers.getObjectLocation(this);
+	{      
+		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
 
 		if (dead) return;
-
-		Bag b = getNeighbors();
-//
-		Double2D avoid = avoidance(b,flock.flockers);
-		Double2D cohe = cohesion(b,flock.flockers);
-		Double2D rand = randomness(flock.random);
-		Double2D cons = consistency(b,flock.flockers);
-		Double2D mome = momentum();
-
-		double dx = flock.cohesion * cohe.x + flock.avoidance * avoid.x + flock.consistency* cons.x + flock.randomness * rand.x + flock.momentum * mome.x;
-		double dy = flock.cohesion * cohe.y + flock.avoidance * avoid.y + flock.consistency* cons.y + flock.randomness * rand.y + flock.momentum * mome.y;
-
-		// renormalize to the given step size
-		double dis = Math.sqrt(dx*dx+dy*dy);
-		if (dis>0)
+		if (state.schedule.getTime()==0 || (state.schedule.getTime()%sdb.EPOCH)!=0)
 		{
-			dx = dx / dis * flock.jump;
-			dy = dy / dis * flock.jump;
-		}
+			final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
+			loc = flock.flockers.getObjectLocation(this);
+	
 		
-		action(state, b);
-	//	loc=move(state, loc);
-		lastd = new Double2D(dx,dy);
-		loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
-		flock.flockers.setObjectLocation(this, loc);
+	
+			Bag b = getNeighbors();
+	//
+			Double2D avoid = avoidance(b,flock.flockers);
+			Double2D cohe = cohesion(b,flock.flockers);
+			Double2D rand = randomness(flock.random);
+			Double2D cons = consistency(b,flock.flockers);
+			Double2D mome = momentum();
+	
+			double dx = flock.cohesion * cohe.x + flock.avoidance * avoid.x + flock.consistency* cons.x + flock.randomness * rand.x + flock.momentum * mome.x;
+			double dy = flock.cohesion * cohe.y + flock.avoidance * avoid.y + flock.consistency* cons.y + flock.randomness * rand.y + flock.momentum * mome.y;
+	
+			// renormalize to the given step size
+			double dis = Math.sqrt(dx*dx+dy*dy);
+			if (dis>0)
+			{
+				dx = dx / dis * flock.jump;
+				dy = dy / dis * flock.jump;
+			}
+			
+			action(state, b);
+		//	loc=move(state, loc);
+			lastd = new Double2D(dx,dy);
+			loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
+			flock.flockers.setObjectLocation(this, loc);
+		}else dead=true;
 	}
 	class Direction extends ArrayList<Agent> implements Comparable
 	{
