@@ -95,7 +95,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
 
 		if (dead) return;
-		if (state.schedule.getTime()==0 || (state.schedule.getTime()%sdb.EPOCH)!=0)
+		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
 			loc = flock.flockers.getObjectLocation(this);

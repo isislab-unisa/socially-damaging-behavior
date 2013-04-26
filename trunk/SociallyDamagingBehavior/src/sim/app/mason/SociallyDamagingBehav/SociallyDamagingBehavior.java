@@ -94,7 +94,7 @@ public class SociallyDamagingBehavior extends SimState
 	{
 		super.start();
 		
-		this.schedule.scheduleRepeating(schedule.EPOCH+this.EPOCH, new NewGenAgent());
+		this.schedule.scheduleRepeating(new NewGenAgent());
 
 		// set up the flockers field.  It looks like a discretization
 		// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
