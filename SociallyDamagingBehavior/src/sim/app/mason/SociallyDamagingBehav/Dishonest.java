@@ -12,7 +12,6 @@ import sim.util.Bag;
 import sim.util.Double2D;
 
 public class Dishonest extends Agent{
-	public Color behav_color=Color.RED;
 
 	public Dishonest(Double2D location,SimState state,float dna) {
 		super(location,state,dna);

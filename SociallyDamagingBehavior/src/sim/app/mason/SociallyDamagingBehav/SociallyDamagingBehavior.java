@@ -1,5 +1,7 @@
 
 package sim.app.mason.SociallyDamagingBehav;
+import java.awt.Color;
+
 import sim.engine.*;
 import sim.util.*;
 import sim.field.continuous.*;
@@ -108,7 +110,9 @@ public class SociallyDamagingBehavior extends SimState
 			/*SDB*/
 			float dna=this.random.nextInt(10)+this.random.nextFloat();
 			//Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
+			
 			Agent flocker = Behaviour.createAgent(location,this,dna);
+			flocker.behav_color=(flocker.dna<5)?Color.GREEN:Color.RED;
 			/*SDB*/
 			flockers.setObjectLocation(flocker, location);
 			flocker.flockers = flockers;
