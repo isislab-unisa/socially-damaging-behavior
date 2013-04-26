@@ -2,6 +2,8 @@
 package sim.app.mason.SociallyDamagingBehav;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import sim.engine.*;
@@ -34,7 +36,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
  
 
 	public Agent(Double2D location,SimState state,float dna) { 
-//		super(new SimplePortrayal2D(), 0, 4.0,behav_color,OrientedPortrayal2D.SHAPE_COMPASS);
+		//super(new SimplePortrayal2D(), 0, 4.0,Color.GREEN,OrientedPortrayal2D.SHAPE_COMPASS);
 
 		loc = location;
 		fitness=state.random.nextInt(100);
@@ -43,18 +45,24 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		behav_color=(dna<5)?Color.GREEN:Color.RED;
 	}
 
-	  public final void draw(Object object, Graphics2D graphics, DrawInfo2D info)
-       {
-     
+	
+	public final void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+    {
+  
 	       // this code was stolen from OvalPortrayal2D
 		   graphics.setColor(behav_color);
-	       int x = (int)(info.draw.x - info.draw.width / 2.0);
+		   int x = (int)(info.draw.x - info.draw.width / 2.0);
 	       int y = (int)(info.draw.y - info.draw.height / 2.0);
 	       int width = (int)(info.draw.width);
 	       int height = (int)(info.draw.height);
 	       graphics.fillOval(x,y,width, height);
+	   
+        
+	   
 
-       }
+    }
+	
+	
 	   
 	public Bag getNeighbors()
 	{
@@ -93,12 +101,17 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public void step(SimState state)
 	{      
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
-	//	if (dead) return;
+
+		if (dead) return;
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
 			loc = flock.flockers.getObjectLocation(this);
+	
+		
+	
 			Bag b = getNeighbors();
+	//
 			Double2D avoid = behavior.avoidance(this,b,flock.flockers);
 			Double2D cohe = behavior.cohesion(this,b,flock.flockers);
 			Double2D rand = randomness(flock.random);
@@ -117,27 +130,28 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			}
 			
 			behavior.action(this,state, b);
+		//	loc=move(state, loc);
 			lastd = new Double2D(dx,dy);
 			loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
 			flock.flockers.setObjectLocation(this, loc);
-		}//else this.dead=true;
+		}else dead=true;
 	}
-//	class Direction extends ArrayList<Agent> implements Comparable
-//	{
-//		double dx;
-//		double dy;
-//		public Direction(double ddx,double ddy)
-//		{
-//			dx=ddx;
-//			dy=ddy;
-//		}
-//		@Override
-//		public int compareTo(Object o) {
-//			if(((Direction)o).size() < this.size()) return -1;
-//			else if(((Direction)o).size() > this.size()) return 1;
-//			return 0;
-//		}
-//	}
+	class Direction extends ArrayList<Agent> implements Comparable
+	{
+		double dx;
+		double dy;
+		public Direction(double ddx,double ddy)
+		{
+			dx=ddx;
+			dy=ddy;
+		}
+		@Override
+		public int compareTo(Object o) {
+			if(((Direction)o).size() < this.size()) return -1;
+			else if(((Direction)o).size() > this.size()) return 1;
+			return 0;
+		}
+	}
 	public double getFitness() {
 		return fitness;
 	}
