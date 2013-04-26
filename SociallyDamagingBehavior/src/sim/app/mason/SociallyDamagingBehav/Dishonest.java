@@ -37,19 +37,40 @@ public class Dishonest extends Agent{
 		double y= 0;
 		int i =0;
 		int count = 0;
-		for(i=0;i<b.numObjs;i++)
+//		for(i=0;i<b.numObjs;i++)
+//		{
+//			Agent other = (Agent)(b.objs[i]);
+//			if (!other.dead && other instanceof Dishonest)
+//			{
+//				double dx = flockers.tdx(loc.x,other.loc.x);
+//				double dy = flockers.tdy(loc.y,other.loc.y);
+//				Double2D m = ((Agent)b.objs[i]).momentum();
+//				count++;
+//				x += m.x;
+//				y += m.y;
+//			}
+//		}
+		count=1;
+		Agent a=(Agent)b.get(0);
+		for(i=1;i<b.numObjs && a!=null;i++)
 		{
-			Agent other = (Agent)(b.objs[i]);
-			if (!other.dead && other instanceof Dishonest)
-			{
-				double dx = flockers.tdx(loc.x,other.loc.x);
-				double dy = flockers.tdy(loc.y,other.loc.y);
-				Double2D m = ((Agent)b.objs[i]).momentum();
-				count++;
-				x += m.x;
-				y += m.y;
-			}
+			Agent a2=(Agent)b.get(i);
+			if(a2!=null && a2.fitness > a.fitness)
+				a=a2;
+			else
+				break;
+		
 		}
+		if(a!=null)
+		{
+			double dx = flockers.tdx(loc.x,a.loc.x);
+			double dy = flockers.tdy(loc.y,a.loc.y);
+			Double2D m = ((Agent)a).momentum();
+			count++;
+			x += m.x;
+			y += m.y;
+		}
+		
 		if (count > 0) { x /= count; y /= count; }
 		return new Double2D(x,y);
 	}
@@ -63,17 +84,36 @@ public class Dishonest extends Agent{
 
 		int count = 0;
 		int i =0;
-		for(i=0;i<b.numObjs;i++)
+//		for(i=0;i<b.numObjs;i++)
+//		{
+//			Agent other = (Agent)(b.objs[i]);
+//			if (!other.dead && other instanceof Dishonest)
+//			{
+//				double dx = flockers.tdx(loc.x,other.loc.x);
+//				double dy = flockers.tdy(loc.y,other.loc.y);
+//				count++;
+//				x += dx;
+//				y += dy;
+//			}
+//		}
+		count=1;
+		Agent a=(Agent)b.get(0);
+		for(i=1;i<b.numObjs && a!=null;i++)
 		{
-			Agent other = (Agent)(b.objs[i]);
-			if (!other.dead && other instanceof Dishonest)
-			{
-				double dx = flockers.tdx(loc.x,other.loc.x);
-				double dy = flockers.tdy(loc.y,other.loc.y);
-				count++;
-				x += dx;
-				y += dy;
-			}
+			Agent a2=(Agent)b.get(i);
+			if(a2!=null && a2.fitness > a.fitness)
+				a=a2;
+			else
+				break;
+			
+		}
+		if(a!=null)
+		{
+			double dx = flockers.tdx(loc.x,a.loc.x);
+			double dy = flockers.tdy(loc.y,a.loc.y);
+			count++;
+			x += dx;
+			y += dy;
 		}
 		if (count > 0) { x /= count; y /= count; }
 		return new Double2D(-x/10,-y/10);
