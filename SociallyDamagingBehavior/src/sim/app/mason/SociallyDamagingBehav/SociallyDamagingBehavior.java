@@ -20,6 +20,7 @@ public class SociallyDamagingBehavior extends SimState
 	public static double HONEST_PAYOFF=2.5;
 	public static double HONEST_PROB=0.7;
 	
+	public static int EPOCH=100;
 	/*SDB*/
 
 	public Continuous2D flockers;
@@ -90,6 +91,8 @@ public class SociallyDamagingBehavior extends SimState
 	public void start()
 	{
 		super.start();
+		
+		this.schedule.scheduleRepeating(schedule.EPOCH+this.EPOCH, new NewGenAgent());
 
 		// set up the flockers field.  It looks like a discretization
 		// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
@@ -104,8 +107,8 @@ public class SociallyDamagingBehavior extends SimState
 			Double2D location = new Double2D(random.nextDouble()*width, random.nextDouble() * height);
 			/*SDB*/
 			float dna=this.random.nextInt(10)+this.random.nextFloat();
-			Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
-			
+			//Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
+			Agent flocker = Behaviour.createAgent(location,this,dna);
 			/*SDB*/
 			flockers.setObjectLocation(flocker, location);
 			flocker.flockers = flockers;

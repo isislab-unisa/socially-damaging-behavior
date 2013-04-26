@@ -1,15 +1,16 @@
 package sim.app.mason.SociallyDamagingBehav;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import sim.app.mason.SociallyDamagingBehav.Agent.Direction;
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.util.Bag;
 import sim.util.Double2D;
 
 public class Honest extends Agent{
+	
+	public Color behav_color=Color.GREEN;
 
 	public Honest(Double2D location,SimState state,float dna) {
 		super(location,state,dna);
