@@ -22,7 +22,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public Continuous2D flockers;
 	public SociallyDamagingBehavior theFlock;
 	public boolean dead = false;
-	public static Color behav_color;
+	public  Color behav_color;
 	public Behaviour behavior;
 
 	/*SDB*/
