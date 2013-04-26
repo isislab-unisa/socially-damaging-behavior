@@ -9,10 +9,11 @@ import sim.field.continuous.*;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
+import sim.portrayal.simple.OvalPortrayal2D;
 import sim.util.*;
 import ec.util.*;
 
-public class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.portrayal.Orientable2D 
+public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal.Orientable2D 
 {
 	private static final long serialVersionUID = 1;
 
@@ -30,9 +31,11 @@ public class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.por
 	
 	
 	/*SDB*/
-	
+ 
+
 	public Agent(Double2D location,SimState state,float dna) { 
 //		super(new SimplePortrayal2D(), 0, 4.0,behav_color,OrientedPortrayal2D.SHAPE_COMPASS);
+
 		loc = location;
 		fitness=state.random.nextInt(100);
 		this.dna=dna;
@@ -40,6 +43,19 @@ public class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.por
 		behav_color=(dna<5)?Color.GREEN:Color.RED;
 	}
 
+	  public final void draw(Object object, Graphics2D graphics, DrawInfo2D info)
+       {
+     
+	       // this code was stolen from OvalPortrayal2D
+		   graphics.setColor(behav_color);
+	       int x = (int)(info.draw.x - info.draw.width / 2.0);
+	       int y = (int)(info.draw.y - info.draw.height / 2.0);
+	       int width = (int)(info.draw.width);
+	       int height = (int)(info.draw.height);
+	       graphics.fillOval(x,y,width, height);
+
+       }
+	   
 	public Bag getNeighbors()
 	{
 		return flockers.getNeighborsExactlyWithinDistance(loc, theFlock.neighborhood, true);
@@ -140,11 +156,6 @@ public class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.por
 	public void setDna(float dna) {
 		this.dna = dna;
 	}
-	
-	/*public final void draw(Object object, Graphics2D graphics, DrawInfo2D info){
-			graphics.setColor(behav_color);
-			super.draw(object, graphics, info);
-		
-	}*/
+
 
 }
