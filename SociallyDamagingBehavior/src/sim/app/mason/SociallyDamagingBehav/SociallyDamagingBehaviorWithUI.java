@@ -6,6 +6,7 @@ import sim.display.*;
 import sim.portrayal.continuous.*;
 import javax.swing.*;
 import java.awt.*;
+
 import sim.portrayal.simple.*;
 import sim.portrayal.SimplePortrayal2D;
 
@@ -65,9 +66,9 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
                 this,
                 new OrientedPortrayal2D(
                     new SimplePortrayal2D(), 0, 4.0,
-                    new Color(      128 + guirandom.nextInt(128),
-                        128 + guirandom.nextInt(128),
-                        128 + guirandom.nextInt(128)),
+                    (flock.flockers.allObjects.objs[x] instanceof Honest)?
+                    		(Color.green): (Color.red)
+					,
                     OrientedPortrayal2D.SHAPE_COMPASS),
                 trailsPortrayal, 100);
 
