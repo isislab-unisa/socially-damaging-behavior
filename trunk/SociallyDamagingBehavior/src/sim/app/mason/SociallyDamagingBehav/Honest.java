@@ -10,7 +10,6 @@ import sim.util.Double2D;
 
 public class Honest extends Agent{
 	
-	public Color behav_color=Color.GREEN;
 
 	public Honest(Double2D location,SimState state,float dna) {
 		super(location,state,dna);
