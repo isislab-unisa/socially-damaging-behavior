@@ -6,11 +6,7 @@ import sim.util.Bag;
 import sim.util.Double2D;
 
 public abstract class Behaviour {
-//	
-//	public static final Agent createAgent(Double2D location,SimState state,float dna){
-//		return (dna < 5)?new Honest(location, state, dna)
-//			:new Dishonest(location, state, dna);
-//	}
+
 	public abstract void action(Agent agent,SimState state,Bag neigh);
 //	public abstract Double2D move(Agent agent,SimState state,Double2D loc);
 	public abstract Double2D consistency(Agent agent,Bag b, Continuous2D flockers);
