@@ -12,7 +12,7 @@ import sim.portrayal.simple.OrientedPortrayal2D;
 import sim.util.*;
 import ec.util.*;
 
-public abstract class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.portrayal.Orientable2D 
+public class Agent /*extends OrientedPortrayal2D*/ implements Steppable, sim.portrayal.Orientable2D 
 {
 	private static final long serialVersionUID = 1;
 
@@ -22,18 +22,21 @@ public abstract class Agent /*extends OrientedPortrayal2D*/ implements Steppable
 	public SociallyDamagingBehavior theFlock;
 	public boolean dead = false;
 	public static Color behav_color;
+	public Behaviour behavior;
 
 	/*SDB*/
 	public double fitness;
 	public float dna;
+	
+	
 	/*SDB*/
-	public abstract void action(SimState state,Bag neigh);
-	public abstract Double2D move(SimState state,Double2D loc);
+	
 	public Agent(Double2D location,SimState state,float dna) { 
 //		super(new SimplePortrayal2D(), 0, 4.0,behav_color,OrientedPortrayal2D.SHAPE_COMPASS);
 		loc = location;
 		fitness=state.random.nextInt(100);
 		this.dna=dna;
+		behavior=(dna<5)?new Honest():new Dishonest();
 		behav_color=(dna<5)?Color.GREEN:Color.RED;
 	}
 
@@ -61,9 +64,7 @@ public abstract class Agent /*extends OrientedPortrayal2D*/ implements Steppable
 	{
 		return lastd;
 	}
-	public abstract Double2D consistency(Bag b, Continuous2D flockers);
-	public abstract Double2D cohesion(Bag b, Continuous2D flockers);
-	public abstract Double2D avoidance(Bag b, Continuous2D flockers);
+	
 	
 	public Double2D randomness(MersenneTwisterFast r)
 	{
@@ -87,10 +88,10 @@ public abstract class Agent /*extends OrientedPortrayal2D*/ implements Steppable
 	
 			Bag b = getNeighbors();
 	//
-			Double2D avoid = avoidance(b,flock.flockers);
-			Double2D cohe = cohesion(b,flock.flockers);
+			Double2D avoid = behavior.avoidance(this,b,flock.flockers);
+			Double2D cohe = behavior.cohesion(this,b,flock.flockers);
 			Double2D rand = randomness(flock.random);
-			Double2D cons = consistency(b,flock.flockers);
+			Double2D cons = behavior.consistency(this,b,flock.flockers);
 			Double2D mome = momentum();
 	
 			double dx = flock.cohesion * cohe.x + flock.avoidance * avoid.x + flock.consistency* cons.x + flock.randomness * rand.x + flock.momentum * mome.x;
@@ -104,7 +105,7 @@ public abstract class Agent /*extends OrientedPortrayal2D*/ implements Steppable
 				dy = dy / dis * flock.jump;
 			}
 			
-			action(state, b);
+			behavior.action(this,state, b);
 		//	loc=move(state, loc);
 			lastd = new Double2D(dx,dy);
 			loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));

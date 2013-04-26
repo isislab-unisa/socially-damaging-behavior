@@ -39,7 +39,7 @@ public class NewGenAgent implements Steppable{
 			}else{
 				float dna=state.random.nextInt(10)+state.random.nextFloat();
 				ra.fitness=state.random.nextInt(100);
-				ra=Behaviour.createAgent(ra.loc, state, dna);
+				ra=new Agent(ra.loc, state, dna);
 			}
 			ra.dead=false;
 			
