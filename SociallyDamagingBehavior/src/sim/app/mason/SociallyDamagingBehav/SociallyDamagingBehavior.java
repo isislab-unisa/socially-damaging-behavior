@@ -26,16 +26,16 @@ public class SociallyDamagingBehavior extends SimState
 	/*SDB*/
 
 	public Continuous2D flockers;
-	public double width = 150;
-	public double height = 150;
-	public int numFlockers = 200;
+	public double width = 600;
+	public double height = 600;
+	public int numFlockers = 3500;
 	public double cohesion = 1.0;
 	public double avoidance = 1.0;
 	public double randomness = 1.0;
 	public double consistency = 1.0;
 	public double momentum = 1.0;
 	public double deadFlockerProbability = 0.0;
-	public double neighborhood = 40;
+	public double neighborhood = 12;
 	public double jump = 0.7;  // how far do we move in a timestep?
 
 	public double getCohesion() { return cohesion; }
