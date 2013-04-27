@@ -10,7 +10,7 @@ public class SociallyDamagingBehavior extends SimState
 {
 	private static final long serialVersionUID = 1;
 	/*SDB*/
-	public static double DAMAGING_PAYOFF_PROB=0.5;
+	public static double DAMAGING_PAYOFF_PROB=0.9;
 	public static double DAMAGING_PAYOFF=2.5;
 
 	public static double PUNISHIMENT_PROB=0.8;
@@ -19,10 +19,10 @@ public class SociallyDamagingBehavior extends SimState
 	public static Object PUNISHIMENT_LAX=new Object();
 	public Object PUNISHIMENT_SEVERITY=PUNISHIMENT_STRICT;
 
-	public static double HONEST_PAYOFF=2.5;
+	public static double HONEST_PAYOFF=100.5;
 	public static double HONEST_PROB=0.7;
 	
-	public static int EPOCH=100;
+	public static int EPOCH=500;
 	/*SDB*/
 
 	public Continuous2D flockers;
@@ -35,7 +35,7 @@ public class SociallyDamagingBehavior extends SimState
 	public double consistency = 1.0;
 	public double momentum = 1.0;
 	public double deadFlockerProbability = 0.0;
-	public double neighborhood = 10;
+	public double neighborhood = 40;
 	public double jump = 0.7;  // how far do we move in a timestep?
 
 	public double getCohesion() { return cohesion; }

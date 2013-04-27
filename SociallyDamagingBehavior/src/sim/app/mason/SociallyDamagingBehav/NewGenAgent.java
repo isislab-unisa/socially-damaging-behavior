@@ -23,19 +23,20 @@ public class NewGenAgent implements Steppable{
 	
 				@Override
 				public int compare(Agent o1, Agent o2) {
-					if(o1.fitness<o2.fitness) return -1;
-					else if(o1.fitness>o2.fitness) return 1;
+					if(o1.fitness<o2.fitness) return 1;
+					else if(o1.fitness>o2.fitness) return -1;
 					return 0;
 				}
 			});
 			int tot=all.size();
 			int riprodurre=(25*tot)/100;
-			for (int i = 0; i < all.size(); i++) {
+			for (int i =0; i < all.size() ; i++) {
 				
 				Agent ra=(Agent)all.get(i);
 				
 				if(i<riprodurre)
 				{
+					//System.out.println(i+" "+ra.fitness);
 					if(state.random.nextBoolean())
 					{
 						float dna=ra.dna+state.random.nextFloat();
@@ -47,17 +48,16 @@ public class NewGenAgent implements Steppable{
 						if(dna < 0) dna=0;
 						else ra.dna=dna;
 					}
+				
 					
-					ra.fitness=state.random.nextInt(100);
 					
 					
 				}else{
-					float dna=state.random.nextInt(10)+state.random.nextFloat();
-					ra.fitness=state.random.nextInt(100);
+					float dna=state.random.nextInt(9)+state.random.nextFloat();
 					ra.dna=dna;
-					//ra=new Agent(ra.loc, state, dna);
 				}
 				ra.dead=false;
+				ra.fitness=state.random.nextInt(100);
 				ra.behavior=(ra.dna<5)?new Honest():new Dishonest();
 				ra.behav_color=(ra.dna<5)?Color.GREEN:Color.RED;
 				
