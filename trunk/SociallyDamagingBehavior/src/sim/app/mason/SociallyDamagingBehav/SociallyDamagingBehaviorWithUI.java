@@ -22,7 +22,7 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
 
     public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
-    ContinuousPortrayal2D flockersPortrayal = new ContinuousPortrayal2D();
+    ContinuousPortrayal2D SDBPortrayal = new ContinuousPortrayal2D();
         
 // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
     ContinuousPortrayal2D trailsPortrayal = new ContinuousPortrayal2D(); 
@@ -37,7 +37,7 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
         super(state);
         }
 
-    public static String getName() { return "Flockers"; }
+    public static String getName() { return "Socially Damaging Behaviors"; }
 
     public void start()
         {
@@ -53,20 +53,20 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
         
     public void setupPortrayals()
         {
-        SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
+        SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
 
-        flockersPortrayal.setField(flock.human_being);
+        SDBPortrayal.setField(sdbState.human_being);
         // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
-        trailsPortrayal.setField(flock.human_being);
+        trailsPortrayal.setField(sdbState.human_being);
         
-        // make the flockers random colors and four times their normal size (prettier)
-        for(int x=0;x<flock.human_being.allObjects.numObjs;x++)
+        // make the human random colors and four times their normal size (prettier)
+        for(int x=0;x<sdbState.human_being.allObjects.numObjs;x++)
             {
             SimplePortrayal2D basic =       new TrailedPortrayal2D(
                 this,
                 new OrientedPortrayal2D(
                     new SimplePortrayal2D(), 0, 4.0,
-                    (flock.human_being.allObjects.objs[x] instanceof Honest)?
+                    (sdbState.human_being.allObjects.objs[x] instanceof Honest)?
                     		(Color.green): (Color.red)
 					,
                     OrientedPortrayal2D.SHAPE_COMPASS),
@@ -80,14 +80,14 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
             // It's okay because the TrailedPortrayal will only draw itself in the trailsPortrayal, which
             // we passed into its constructor.
                         
-            flockersPortrayal.setPortrayalForObject(flock.human_being.allObjects.objs[x], 
+            SDBPortrayal.setPortrayalForObject(sdbState.human_being.allObjects.objs[x], 
                 new AdjustablePortrayal2D(new MovablePortrayal2D(basic)));
-            trailsPortrayal.setPortrayalForObject(flock.human_being.allObjects.objs[x], basic );
+            trailsPortrayal.setPortrayalForObject(sdbState.human_being.allObjects.objs[x], basic );
             }
         
         // update the size of the display appropriately.
-        double w = flock.human_being.getWidth();
-        double h = flock.human_being.getHeight();
+        double w = sdbState.human_being.getWidth();
+        double h = sdbState.human_being.getHeight();
         if (w == h)
             { display.insideDisplay.width = display.insideDisplay.height = 750; }
         else if (w > h)
@@ -112,13 +112,13 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
 
 
         displayFrame = display.createFrame();
-        displayFrame.setTitle("Flockers");
+        displayFrame.setTitle("Socially Damaging Behaviors");
         c.registerFrame(displayFrame);   // register the frame so it appears in the "Display" list
         displayFrame.setVisible(true);
 // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
         display.attach( trailsPortrayal, "Trails" );
                 
-        display.attach( flockersPortrayal, "Behold the Flock!" );
+        display.attach( SDBPortrayal, "Behold the Human!" );
         }
         
     public void quit()

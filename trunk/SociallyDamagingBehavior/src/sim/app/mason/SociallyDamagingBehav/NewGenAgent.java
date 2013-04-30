@@ -14,12 +14,10 @@ public class NewGenAgent implements Steppable{
 
 	@Override
 	public void step(SimState state) {
-		final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
-		if(state.schedule.getSteps()!=0 && state.schedule.getSteps()%flock.EPOCH==0)
+		final SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
+		if(state.schedule.getSteps()!=0 && state.schedule.getSteps()%sdbState.EPOCH==0)
 		{
-		
-		
-			Bag all=flock.human_being.allObjects;
+			Bag all=sdbState.human_being.allObjects;
 			all.sort(new Comparator<Agent>() {
 	
 				@Override
@@ -40,15 +38,16 @@ public class NewGenAgent implements Steppable{
 					//System.out.println(i+" "+ra.fitness);
 					if(state.random.nextBoolean())
 					{
-						double dna=ra.dna+state.random.nextDouble();
+						double dna=ra.dna+(state.random.nextDouble()/10);
 						if(dna > 10) dna=10;
 						else ra.dna=dna;
-					}else
-					{
-						double dna=ra.dna-state.random.nextDouble();
-						if(dna < 0) dna=0;
-						else ra.dna=dna;
 					}
+//					else
+//					{
+//						double dna=ra.dna-(state.random.nextDouble()/10);
+//						if(dna < 0) dna=0;
+//						else ra.dna=dna;
+//					}
 				
 				}/*else{
 					double dna=state.random.nextInt(9)+state.random.nextDouble();
@@ -56,8 +55,9 @@ public class NewGenAgent implements Steppable{
 				}*/
 				ra.dead=false;
 				//ra.fitness=state.random.nextInt(100);
+				
 				ra.behavior=(ra.dna>5)?new Honest():new Dishonest();
-				ra.behav_color=(ra.dna>5)?Color.GREEN:Color.RED;				
+				ra.behav_color=(ra.dna>5)?Color.GREEN:Color.RED;	
 			}	
 		}
 		

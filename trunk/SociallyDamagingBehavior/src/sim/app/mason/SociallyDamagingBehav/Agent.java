@@ -21,8 +21,8 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 
 	public Double2D loc = new Double2D(0,0);
 	public Double2D lastd = new Double2D(0,0);
-	public Continuous2D flockers;
-	public SociallyDamagingBehavior theFlock;
+	public Continuous2D humans;
+	public SociallyDamagingBehavior theHuman;
 	public boolean dead = false;
 	public  Color behav_color;
 	public Behaviour behavior;
@@ -30,9 +30,9 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	/*SDB*/
 	public double fitness;
 	public double dna;
-	public double ce = 0.0f;
-	public double cei = 0.0f;	
-	public double tpi = 0.0f;
+	public double ce = 0.0;
+	public double cei = 0.0;	
+	public double tpi = 0.0;
 	public boolean honestAction;
 	/*SDB*/
  
@@ -66,7 +66,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	   
 	public Bag getNeighbors()
 	{
-		return flockers.getObjectsExactlyWithinDistance(loc, theFlock.neighborhood, true);
+		return humans.getObjectsExactlyWithinDistance(loc, theHuman.neighborhood, true);
 	}
 
 	public double getOrientation() { return orientation2D(); }
@@ -105,29 +105,29 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		if (dead) return;
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
-			final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
-			loc = flock.human_being.getObjectLocation(this);
+			final SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
+			loc = sdbState.human_being.getObjectLocation(this);
 	
 			behavior=(dna>5)?new Honest():new Dishonest();
 			behav_color=(dna>5)?Color.GREEN:Color.RED;
 	
 			Bag b = getNeighbors();
 	//
-			Double2D avoid = behavior.avoidance(this,b,flock.human_being);
-			Double2D cohe = behavior.cohesion(this,b,flock.human_being);
-			Double2D rand = randomness(flock.random);
-			Double2D cons = behavior.consistency(this,b,flock.human_being);
+			Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
+			Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
+			Double2D rand = randomness(sdbState.random);
+			Double2D cons = behavior.consistency(this,b,sdbState.human_being);
 			Double2D mome = momentum();
 	
-			double dx = flock.cohesion * cohe.x + flock.avoidance * avoid.x + flock.consistency* cons.x + flock.randomness * rand.x + flock.momentum * mome.x;
-			double dy = flock.cohesion * cohe.y + flock.avoidance * avoid.y + flock.consistency* cons.y + flock.randomness * rand.y + flock.momentum * mome.y;
+			double dx = sdbState.cohesion * cohe.x + sdbState.avoidance * avoid.x + sdbState.consistency* cons.x + sdbState.randomness * rand.x + sdbState.momentum * mome.x;
+			double dy = sdbState.cohesion * cohe.y + sdbState.avoidance * avoid.y + sdbState.consistency* cons.y + sdbState.randomness * rand.y + sdbState.momentum * mome.y;
 	
 			// renormalize to the given step size
 			double dis = Math.sqrt(dx*dx+dy*dy);
 			if (dis>0)
 			{
-				dx = dx / dis * flock.jump;
-				dy = dy / dis * flock.jump;
+				dx = dx / dis * sdbState.jump;
+				dy = dy / dis * sdbState.jump;
 			}
 			
 			behavior.action(this, state, b);
@@ -138,8 +138,8 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			
 		//	loc=move(state, loc);
 			lastd = new Double2D(dx,dy);
-			loc = new Double2D(flock.human_being.stx(loc.x + dx), flock.human_being.sty(loc.y + dy));
-			flock.human_being.setObjectLocation(this, loc);
+			loc = new Double2D(sdbState.human_being.stx(loc.x + dx), sdbState.human_being.sty(loc.y + dy));
+			sdbState.human_being.setObjectLocation(this, loc);
 		}//else dead=true;
 	}
 	class Direction extends ArrayList<Agent> implements Comparable

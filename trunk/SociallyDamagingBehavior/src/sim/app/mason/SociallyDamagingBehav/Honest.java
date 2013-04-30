@@ -39,7 +39,7 @@ public class Honest extends Behaviour{
 //		}
 	}
 	
-	public Double2D consistency(Agent agent,Bag b, Continuous2D flockers)
+	public Double2D consistency(Agent agent,Bag b, Continuous2D humans)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
 
@@ -52,8 +52,8 @@ public class Honest extends Behaviour{
 //			Agent other = (Agent)(b.objs[i]);
 //			if (!other.dead && other instanceof Dishonest)
 //			{
-//				double dx = flockers.tdx(loc.x,other.loc.x);
-//				double dy = flockers.tdy(loc.y,other.loc.y);
+//				double dx = humans.tdx(loc.x,other.loc.x);
+//				double dy = humans.tdy(loc.y,other.loc.y);
 //				Double2D m = ((Agent)b.objs[i]).momentum();
 //				count++;
 //				x -= m.x;
@@ -72,8 +72,8 @@ public class Honest extends Behaviour{
 		}
 		if(a!=null)
 		{
-			double dx = flockers.tdx(agent.loc.x,a.loc.x);
-			double dy = flockers.tdy(agent.loc.y,a.loc.y);
+			double dx = humans.tdx(agent.loc.x,a.loc.x);
+			double dy = humans.tdy(agent.loc.y,a.loc.y);
 			Double2D m = ((Agent)a).momentum();
 			count++;
 			x += m.x;
@@ -84,7 +84,7 @@ public class Honest extends Behaviour{
 		return new Double2D(x,y);
 	}
 
-	public Double2D cohesion(Agent agent,Bag b, Continuous2D flockers)
+	public Double2D cohesion(Agent agent,Bag b, Continuous2D humans)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
 
@@ -98,8 +98,8 @@ public class Honest extends Behaviour{
 //			Agent other = (Agent)(b.objs[i]);
 //			if (!other.dead && other instanceof Dishonest)
 //			{
-//				double dx = flockers.tdx(loc.x,other.loc.x);
-//				double dy = flockers.tdy(loc.y,other.loc.y);
+//				double dx = humans.tdx(loc.x,other.loc.x);
+//				double dy = humans.tdy(loc.y,other.loc.y);
 //				count++;
 //				x -= dx;
 //				y -= dy;
@@ -118,8 +118,8 @@ public class Honest extends Behaviour{
 		}
 		if(a!=null)
 		{
-			double dx = flockers.tdx(agent.loc.x,a.loc.x);
-			double dy = flockers.tdy(agent.loc.y,a.loc.y);
+			double dx = humans.tdx(agent.loc.x,a.loc.x);
+			double dy = humans.tdy(agent.loc.y,a.loc.y);
 			count++;
 			x += dx;
 			y += dy;
@@ -128,7 +128,7 @@ public class Honest extends Behaviour{
 		return new Double2D(-x/10,-y/10);
 	}
 
-	public Double2D avoidance(Agent agent,Bag b, Continuous2D flockers)
+	public Double2D avoidance(Agent agent,Bag b, Continuous2D humans)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
 		double x = 0;
@@ -142,8 +142,8 @@ public class Honest extends Behaviour{
 //			Agent other = (Agent)(b.objs[i]);
 //			if (other != agent )
 //			{
-//				double dx = flockers.tdx(agent.loc.x,other.loc.x);
-//				double dy = flockers.tdy(agent.loc.y,other.loc.y);
+//				double dx = humans.tdx(agent.loc.x,other.loc.x);
+//				double dy = humans.tdy(agent.loc.y,other.loc.y);
 //				double lensquared = dx*dx+dy*dy;
 //				count++;
 //				x += dx/(lensquared*lensquared + 1);
@@ -163,8 +163,8 @@ public class Honest extends Behaviour{
 		}
 		if(a!=null)
 		{
-			double dx = flockers.tdx(agent.loc.x,a.loc.x);
-			double dy = flockers.tdy(agent.loc.y,a.loc.y);
+			double dx = humans.tdx(agent.loc.x,a.loc.x);
+			double dy = humans.tdy(agent.loc.y,a.loc.y);
 			double lensquared = dx*dx+dy*dy;
 			count++;
 			x += dx/(lensquared*lensquared + 1);
