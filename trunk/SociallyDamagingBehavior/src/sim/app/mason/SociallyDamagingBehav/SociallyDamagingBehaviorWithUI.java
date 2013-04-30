@@ -55,18 +55,18 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
         {
         SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
 
-        flockersPortrayal.setField(flock.flockers);
+        flockersPortrayal.setField(flock.human_being);
         // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
-        trailsPortrayal.setField(flock.flockers);
+        trailsPortrayal.setField(flock.human_being);
         
         // make the flockers random colors and four times their normal size (prettier)
-        for(int x=0;x<flock.flockers.allObjects.numObjs;x++)
+        for(int x=0;x<flock.human_being.allObjects.numObjs;x++)
             {
             SimplePortrayal2D basic =       new TrailedPortrayal2D(
                 this,
                 new OrientedPortrayal2D(
                     new SimplePortrayal2D(), 0, 4.0,
-                    (flock.flockers.allObjects.objs[x] instanceof Honest)?
+                    (flock.human_being.allObjects.objs[x] instanceof Honest)?
                     		(Color.green): (Color.red)
 					,
                     OrientedPortrayal2D.SHAPE_COMPASS),
@@ -80,14 +80,14 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
             // It's okay because the TrailedPortrayal will only draw itself in the trailsPortrayal, which
             // we passed into its constructor.
                         
-            flockersPortrayal.setPortrayalForObject(flock.flockers.allObjects.objs[x], 
+            flockersPortrayal.setPortrayalForObject(flock.human_being.allObjects.objs[x], 
                 new AdjustablePortrayal2D(new MovablePortrayal2D(basic)));
-            trailsPortrayal.setPortrayalForObject(flock.flockers.allObjects.objs[x], basic );
+            trailsPortrayal.setPortrayalForObject(flock.human_being.allObjects.objs[x], basic );
             }
         
         // update the size of the display appropriately.
-        double w = flock.flockers.getWidth();
-        double h = flock.flockers.getHeight();
+        double w = flock.human_being.getWidth();
+        double h = flock.human_being.getHeight();
         if (w == h)
             { display.insideDisplay.width = display.insideDisplay.height = 750; }
         else if (w > h)
