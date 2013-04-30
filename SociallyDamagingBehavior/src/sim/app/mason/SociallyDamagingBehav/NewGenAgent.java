@@ -1,6 +1,7 @@
 package sim.app.mason.SociallyDamagingBehav;
 
 import java.awt.Color;
+import java.security.AllPermission;
 import java.util.Comparator;
 
 import sim.engine.Schedule;
@@ -18,7 +19,7 @@ public class NewGenAgent implements Steppable{
 		{
 		
 		
-			Bag all=flock.flockers.allObjects;
+			Bag all=flock.human_being.allObjects;
 			all.sort(new Comparator<Agent>() {
 	
 				@Override
@@ -29,7 +30,7 @@ public class NewGenAgent implements Steppable{
 				}
 			});
 			int tot=all.size();
-			int riprodurre=(25*tot)/100;
+			int riprodurre=(50*tot)/100;
 			for (int i =0; i < all.size() ; i++) {
 				
 				Agent ra=(Agent)all.get(i);
@@ -39,30 +40,25 @@ public class NewGenAgent implements Steppable{
 					//System.out.println(i+" "+ra.fitness);
 					if(state.random.nextBoolean())
 					{
-						float dna=ra.dna+state.random.nextFloat();
+						double dna=ra.dna+state.random.nextDouble();
 						if(dna > 10) dna=10;
 						else ra.dna=dna;
 					}else
 					{
-						float dna=ra.dna-state.random.nextFloat();
+						double dna=ra.dna-state.random.nextDouble();
 						if(dna < 0) dna=0;
 						else ra.dna=dna;
 					}
 				
-					
-					
-					
-				}else{
-					float dna=state.random.nextInt(9)+state.random.nextFloat();
+				}/*else{
+					double dna=state.random.nextInt(9)+state.random.nextDouble();
 					ra.dna=dna;
-				}
+				}*/
 				ra.dead=false;
-				ra.fitness=state.random.nextInt(100);
-				ra.behavior=(ra.dna<5)?new Honest():new Dishonest();
-				ra.behav_color=(ra.dna<5)?Color.GREEN:Color.RED;
-				
-				
-			}
+				//ra.fitness=state.random.nextInt(100);
+				ra.behavior=(ra.dna>5)?new Honest():new Dishonest();
+				ra.behav_color=(ra.dna>5)?Color.GREEN:Color.RED;				
+			}	
 		}
 		
 	}

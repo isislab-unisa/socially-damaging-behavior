@@ -9,17 +9,36 @@ import sim.util.Bag;
 import sim.util.Double2D;
 
 public class Honest extends Behaviour{
-	
-
 
 	@Override
-	public void action(Agent agent,SimState state,Bag neigh) {
+	public void action(Agent agent,SimState state,Bag neigh) 
+	{
 		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
-		if(sdb.askHonestAgentAction(agent.dna) && sdb.tryHonestAgentAction())
+		int action = sdb.chooseAction(agent.dna);
+		if(action == 1)
 		{
-			agent.fitness+=sdb.HONEST_PAYOFF;
+			agent.honestAction=true;
+			if(sdb.tryHonestAgentAction())
+				agent.fitness+=sdb.HONEST_PAYOFF;
+			
 		}
+		else
+		{
+			agent.honestAction=false;
+			if(sdb.tryDisHonestAgentAction())
+			{
+				agent.fitness+=sdb.DAMAGING_PAYOFF;
+				if(neigh.size()!=0)
+					((Agent)neigh.get(state.random.nextInt(neigh.size()))).fitness-=sdb.DAMAGING_PAYOFF;
+			}
+		}
+		
+//		if(sdb.chooseAction(agent.dna) && sdb.tryHonestAgentAction())
+//		{
+//			agent.fitness+=sdb.HONEST_PAYOFF;
+//		}
 	}
+	
 	public Double2D consistency(Agent agent,Bag b, Continuous2D flockers)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
@@ -155,10 +174,115 @@ public class Honest extends Behaviour{
 		return new Double2D(400*x,400*y);      
 	}
 
+	@Override
+	public void calculateCEI(Agent a, SociallyDamagingBehavior sdb, Bag n)	//Calcola l'actual social influence
+	{
+		Bag neigh = n;
+		if(neigh.size()>0)
+		{
+			int H_neigh=0;
+			int DH_neigh=0;
+			for(Object o:neigh)
+			{
+				Agent n_a=(Agent)o;
+				if(n_a.behavior instanceof Honest) H_neigh++;
+				else DH_neigh++;	
+			}
+
+			if(H_neigh != DH_neigh)
+			{
+				if(H_neigh > DH_neigh)
+					a.ce = (sdb.SOCIAL_INFLUENCE * H_neigh);
+				if(DH_neigh < H_neigh)
+					a.ce = (sdb.SOCIAL_INFLUENCE * DH_neigh);
+			}
+			else
+				a.ce = 0;
+		}
+		double t1 = a.dna;
+		double t2 = (10 - a.dna);
+		if(t1 > 72)
+			a.tpi = t1;
+		if(t2 > t1)
+			a.tpi = t2;
+		a.cei = ((a.tpi/100)*a.ce);	
+	} 
 	
-	
-//	@Override
-//	public Double2D move(Agent agent,SimState state,Double2D loc) {
+	@Override
+	public Double2D move(SimState state,Double2D loc, Bag n) {
+
+		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
+
+		Bag neigh = n;
+		double dx = 0.0;
+		double dy = 0.0;
+		double y_max = sdb.height;
+		double x_max = sdb.width;
+		double ip = 0.0;
+		double sin = 0.0;
+		double raggio = sdb.neighborhood;
+		int fx = 0;
+		int fy = 0;
+		int q0 = 0;
+		int q1 = 0;
+		int q2 = 0;
+		int q3 = 0;
+		int q4 = 0;
+		int q5 = 0;
+		int q6 = 0;
+		int q7 = 0;
+		
+		//Distanze
+		for(Object o:neigh)
+		{
+			Agent n_a=(Agent)o;
+			dx = Math.abs(loc.x-n_a.loc.x)>raggio?x_max-Math.abs(loc.x-n_a.loc.x):Math.abs(loc.x-n_a.loc.x);
+			dy = Math.abs(loc.y-n_a.loc.y)>raggio?y_max-Math.abs(loc.y-n_a.loc.y):Math.abs(loc.y-n_a.loc.y);
+			
+			//seno
+			ip = Math.sqrt(Math.pow(dx, 2)+Math.pow(dy, 2));
+			sin = dy/ip;
+			
+			//Quadranti
+			if(Math.abs(loc.x-n_a.loc.x)>raggio)
+				fx = (loc.x-dx)<0?1:0;
+			else
+				fx = (n_a.loc.x<=loc.x)?1:0;
+			
+			if(Math.abs(loc.y-n_a.loc.y)>raggio)
+				fy = (loc.y-dy)<0?1:0;
+			else
+				fy = (n_a.loc.y<=loc.y)?1:0;
+			
+			//Quadri
+			if(fx==0 && fy==1)
+				if((sin>=0) && (sin<Math.sqrt(2)/2))
+					q0++;
+				else
+					q1++;
+			
+			if(fx==1 && fy==1)
+				if((sin>=0) && (sin<Math.sqrt(2)/2))
+					q3++;
+				else
+					q2++;
+			
+			if(fx==1 && fy==0)
+				if((sin>=0) && (sin<Math.sqrt(2)/2))
+					q4++;
+				else
+					q5++;
+			
+			if(fx==0 && fy==0)
+				if((sin>=0) && (sin<Math.sqrt(2)/2))
+					q7++;
+				else
+					q6++;
+		}
+		
+		System.out.println("q0="+q0+"\nq1="+q1+"\nq2="+q2+"\nq3="+q3+"\nq4="+q4+"\nq5="+q5+"\nq6="+q6+"\nq7="+q7);
+		
+		return null;
 //		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
 //		Bag neigh=agent.getNeighbors();
 //		
@@ -271,6 +395,61 @@ public class Honest extends Behaviour{
 //			return new Double2D(loc.x+all_dir.get(0).dx,
 //					loc.y+all_dir.get(0).dy);
 //		}
-//	}
+	}
+
+	@Override
+	public void socialInfluence(Agent agent, SimState state, Bag neigh) {
+		// TODO Auto-generated method stub
+		
+		int H_neigh=0;
+		int DH_neigh=0;
+		Agent a = agent;
+		
+		if(neigh.size()>0)
+		{
+			for(Object o:neigh)
+			{
+				Agent n_a=(Agent)o;
+				if(n_a.behavior instanceof Honest) H_neigh++;
+				else DH_neigh++;
+				
+			}
+		}
+		
+		if(H_neigh>=DH_neigh) //if nethonest
+		{
+			if(a.honestAction)
+			{
+				double newDna = a.dna + (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+			else
+			{
+				double newDna = a.dna + (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+		}
+		else	//if netdishonest
+		{
+			if(a.honestAction)
+			{
+				double newDna = a.dna - (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+			else
+			{
+				double newDna = a.dna - (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+		}
+	}
 
 }

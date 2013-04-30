@@ -29,20 +29,22 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 
 	/*SDB*/
 	public double fitness;
-	public float dna;
-	
-	
+	public double dna;
+	public double ce = 0.0f;
+	public double cei = 0.0f;	
+	public double tpi = 0.0f;
+	public boolean honestAction;
 	/*SDB*/
  
 
-	public Agent(Double2D location,SimState state,float dna) { 
+	public Agent(Double2D location,SimState state,double dna) { 
 		//super(new SimplePortrayal2D(), 0, 4.0,Color.GREEN,OrientedPortrayal2D.SHAPE_COMPASS);
 
 		loc = location;
 		fitness=state.random.nextInt(100);
 		this.dna=dna;
-		behavior=(dna<5)?new Honest():new Dishonest();
-		behav_color=(dna<5)?Color.GREEN:Color.RED;
+		behavior=(dna>5)?new Honest():new Dishonest();
+		behav_color=(dna>5)?Color.GREEN:Color.RED;
 	}
 
 	
@@ -61,12 +63,10 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	   
 
     }
-	
-	
 	   
 	public Bag getNeighbors()
 	{
-		return flockers.getNeighborsExactlyWithinDistance(loc, theFlock.neighborhood, true);
+		return flockers.getObjectsExactlyWithinDistance(loc, theFlock.neighborhood, true);
 	}
 
 	public double getOrientation() { return orientation2D(); }
@@ -106,16 +106,17 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior flock = (SociallyDamagingBehavior)state;
-			loc = flock.flockers.getObjectLocation(this);
+			loc = flock.human_being.getObjectLocation(this);
 	
-		
+			behavior=(dna>5)?new Honest():new Dishonest();
+			behav_color=(dna>5)?Color.GREEN:Color.RED;
 	
 			Bag b = getNeighbors();
 	//
-			Double2D avoid = behavior.avoidance(this,b,flock.flockers);
-			Double2D cohe = behavior.cohesion(this,b,flock.flockers);
+			Double2D avoid = behavior.avoidance(this,b,flock.human_being);
+			Double2D cohe = behavior.cohesion(this,b,flock.human_being);
 			Double2D rand = randomness(flock.random);
-			Double2D cons = behavior.consistency(this,b,flock.flockers);
+			Double2D cons = behavior.consistency(this,b,flock.human_being);
 			Double2D mome = momentum();
 	
 			double dx = flock.cohesion * cohe.x + flock.avoidance * avoid.x + flock.consistency* cons.x + flock.randomness * rand.x + flock.momentum * mome.x;
@@ -129,12 +130,17 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 				dy = dy / dis * flock.jump;
 			}
 			
-			behavior.action(this,state, b);
+			behavior.action(this, state, b);
+			behavior.calculateCEI(this, sdb, b);
+			
+			//Social Influence
+			behavior.socialInfluence(this, sdb, b);
+			
 		//	loc=move(state, loc);
 			lastd = new Double2D(dx,dy);
-			loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
-			flock.flockers.setObjectLocation(this, loc);
-		}else dead=true;
+			loc = new Double2D(flock.human_being.stx(loc.x + dx), flock.human_being.sty(loc.y + dy));
+			flock.human_being.setObjectLocation(this, loc);
+		}//else dead=true;
 	}
 	class Direction extends ArrayList<Agent> implements Comparable
 	{
@@ -158,12 +164,10 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public void setFitness(double fitness) {
 		this.fitness = fitness;
 	}
-	public float getDna() {
+	public double getDna() {
 		return dna;
 	}
-	public void setDna(float dna) {
+	public void setDna(double dna) {
 		this.dna = dna;
 	}
-
-
 }
