@@ -22,7 +22,7 @@ public class SociallyDamagingBehavior extends SimState
 	public static double HONEST_PROB = 1.0;
 	public static int PERCENT_HONEST = 50;
 	
-	public static int EPOCH = 500;
+	public static int EPOCH = 100;
 	/*SDB*/
 
 	public Continuous2D human_being;
@@ -34,7 +34,7 @@ public class SociallyDamagingBehavior extends SimState
 	public double randomness = 1.0;
 	public double consistency = 1.0;
 	public double momentum = 1.0;
-	//public double deadFlockerProbability = 0.0;
+	//public double deadHumanProbability = 0.0;
 	public double neighborhood = 10;
 	public double jump = 0.7;  // how far do we move in a timestep?
 
@@ -48,16 +48,14 @@ public class SociallyDamagingBehavior extends SimState
 	public void setConsistency(double val) { if (val >= 0.0) consistency = val; }
 	public double getMomentum() { return momentum; }
 	public void setMomentum(double val) { if (val >= 0.0) momentum = val; }
-	public int getNumFlockers() { return numHumanBeing; }
-	public void setNumFlockers(int val) { if (val >= 1) numHumanBeing = val; }
+	public int getNumHuman() { return numHumanBeing; }
+	public void setNumHuman(int val) { if (val >= 1) numHumanBeing = val; }
 	public double getWidth() { return width; }
 	public void setWidth(double val) { if (val > 0) width = val; }
 	public double getHeight() { return height; }
 	public void setHeight(double val) { if (val > 0) height = val; }
 	public double getNeighborhood() { return neighborhood; }
 	public void setNeighborhood(double val) { if (val > 0) neighborhood = val; }
-//	public double getDeadFlockerProbability() { return deadFlockerProbability; }
-//	public void setDeadFlockerProbability(double val) { if (val >= 0.0 && val <= 1.0) deadFlockerProbability = val; }
 
 	public Double2D[] getLocations()
 	{
@@ -84,7 +82,7 @@ public class SociallyDamagingBehavior extends SimState
 		return locs;
 	}
 
-	/** Creates a Flockers simulation with the given random number seed. */
+	/** Creates a SDB simulation with the given random number seed. */
 	public SociallyDamagingBehavior(long seed)
 	{
 		super(seed);
@@ -96,14 +94,14 @@ public class SociallyDamagingBehavior extends SimState
 		
 		this.schedule.scheduleRepeating(new NewGenAgent());
 
-		// set up the flockers field.  It looks like a discretization
+		// set up the human field.  It looks like a discretization
 		// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
 		// that's 16 hash lookups! I would have guessed that 
 		// neighborhood * 2 (which is about 4 lookups on average)
 		// would be optimal.  Go figure.
 		human_being = new Continuous2D(neighborhood/1.5,width,height);
 
-		// make a bunch of flockers and schedule 'em.  
+		// make a bunch of humans and schedule 'em.  
 		
 		int hon = (numHumanBeing*PERCENT_HONEST)/100;
 		int disHon = numHumanBeing - hon;
@@ -116,14 +114,13 @@ public class SociallyDamagingBehavior extends SimState
 			Double2D location = new Double2D(random.nextDouble()*width, random.nextDouble() * height);
 			/*SDB*/
 			double dna=5+this.random.nextInt(4)+this.random.nextDouble(); //5<value<10
-			//Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
 			
-			Agent flocker = new Agent(location,this,dna);
+			Agent dhAgent = new Agent(location,this,dna);
 			/*SDB*/
-			human_being.setObjectLocation(flocker, location);
-			flocker.flockers = human_being;
-			flocker.theFlock = this;
-			schedule.scheduleRepeating(flocker);
+			human_being.setObjectLocation(dhAgent, location);
+			dhAgent.humans = human_being;
+			dhAgent.theHuman = this;
+			schedule.scheduleRepeating(dhAgent);
 		}
 		
 		//Create Dishonest Agent
@@ -133,14 +130,13 @@ public class SociallyDamagingBehavior extends SimState
 			/*SDB*/
 			
 			double dna=this.random.nextInt(4)+this.random.nextDouble(); //0<value<5
-			//Agent flocker =dna<5?new Honest(location,this,dna):new Dishonest(location,this,dna);
 			
-			Agent flocker = new Agent(location,this,dna);
+			Agent dhAgent = new Agent(location,this,dna);
 			/*SDB*/
-			human_being.setObjectLocation(flocker, location);
-			flocker.flockers = human_being;
-			flocker.theFlock = this;
-			schedule.scheduleRepeating(flocker);
+			human_being.setObjectLocation(dhAgent, location);
+			dhAgent.humans = human_being;
+			dhAgent.theHuman = this;
+			schedule.scheduleRepeating(dhAgent);
 		}
 	}
 	
