@@ -1,10 +1,6 @@
 package sim.app.mason.SociallyDamagingBehav;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.Iterator;
 
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
@@ -18,13 +14,32 @@ public class Dishonest extends Behaviour{
 	@Override
 	public void action(Agent agent,SimState state,Bag neigh) {
 		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
-		if(!sdb.askHonestAgentAction(agent.dna) && sdb.tryDisHonestAgentAction())
+		
+		int action = sdb.chooseAction(agent.dna);
+		if(action == 1)
 		{
-			agent.fitness+=sdb.DAMAGING_PAYOFF;
-			if(neigh.size()!=0)
-			((Agent)neigh.get(state.random.nextInt(neigh.size()))).fitness-=sdb.DAMAGING_PAYOFF;
-			sdb.legalPunishment(agent, neigh);
+			agent.honestAction=true;
+			if(sdb.tryHonestAgentAction())
+				agent.fitness+=sdb.HONEST_PAYOFF;
 		}
+		else
+		{
+			agent.honestAction=false;
+			if(sdb.tryDisHonestAgentAction())
+			{
+				agent.fitness+=sdb.DAMAGING_PAYOFF;
+				if(neigh.size()!=0)
+					((Agent)neigh.get(state.random.nextInt(neigh.size()))).fitness-=sdb.DAMAGING_PAYOFF;
+				sdb.legalPunishment(agent, neigh);
+			}
+		}
+//		if((!sdb.chooseAction(agent.dna)) && sdb.tryDisHonestAgentAction())
+//		{
+//			agent.fitness+=sdb.DAMAGING_PAYOFF;
+//			if(neigh.size()!=0)
+//			((Agent)neigh.get(state.random.nextInt(neigh.size()))).fitness-=sdb.DAMAGING_PAYOFF;
+//			sdb.legalPunishment(agent, neigh);
+//		}
 		
 	}
 	public Double2D consistency(Agent agent,Bag b, Continuous2D flockers)
@@ -164,12 +179,48 @@ public class Dishonest extends Behaviour{
    
 	}
 
-//	@Override
-//	public Double2D move(SimState state,Double2D loc) {
+	@Override
+	public void calculateCEI(Agent a, SociallyDamagingBehavior sdb, Bag n)	//Calcola l'actual social influence
+	{
+		Bag neigh = n;
+		if(neigh.size()>0)
+		{
+			int H_neigh=0;
+			int DH_neigh=0;
+			for(Object o:neigh)
+			{
+				Agent n_a=(Agent)o;
+				if(n_a.behavior instanceof Honest) H_neigh++;
+				else DH_neigh++;
+				
+			}
+
+			if(H_neigh != DH_neigh)
+			{
+				if(H_neigh > DH_neigh)
+					a.ce = (sdb.SOCIAL_INFLUENCE * H_neigh);
+				if(DH_neigh < H_neigh)
+					a.ce = (sdb.SOCIAL_INFLUENCE * DH_neigh);
+			}
+			else
+				a.ce = 0;
+		}
+		double t1 = a.dna;
+		double t2 = (10 - a.dna);
+		if(t1 > 72)
+			a.tpi = t1;
+		if(t2 > t1)
+			a.tpi = t2;
+		a.cei = ((a.tpi/100)*a.ce);	
+	} 
+	
+	@Override
+	public Double2D move(SimState state, Double2D loc, Bag neigh) 
+	{
+		return null;
 //		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
 //		Bag neigh=super.getNeighbors();
-//		
-//		
+//				
 //		Direction Q0=new Direction(sdb.jump, sdb.jump);
 //		Direction Q1=new Direction(sdb.jump, sdb.jump);
 //		Direction Q2=new Direction(sdb.jump, sdb.jump);
@@ -279,6 +330,60 @@ public class Dishonest extends Behaviour{
 //					loc.y+all_dir.get(0).dy);
 //		}
 //		
-//	}
+	}
 
+	@Override
+	public void socialInfluence(Agent agent, SimState state, Bag neigh) {
+		// TODO Auto-generated method stub
+		
+		int H_neigh=0;
+		int DH_neigh=0;
+		Agent a = agent;
+		
+		if(neigh.size()>0)
+		{
+			for(Object o:neigh)
+			{
+				Agent n_a=(Agent)o;
+				if(n_a.behavior instanceof Honest) H_neigh++;
+				else DH_neigh++;
+				
+			}
+		}
+		
+		if(H_neigh>=DH_neigh) //if nethonest
+		{
+			if(a.honestAction)
+			{
+				double newDna = a.dna + (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+			else
+			{
+				double newDna = a.dna + (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+		}
+		else	//if netdishonest
+		{
+			if(a.honestAction)
+			{
+				double newDna = a.dna - (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+			else
+			{
+				double newDna = a.dna - (a.ce - a.cei);
+				if(newDna > 10)
+					newDna = 10;
+				a.dna = newDna; 
+			}
+		}
+	}
 }
