@@ -21,14 +21,13 @@ public class SociallyDamagingBehavior extends SimState
 	public static double HONEST_PAYOFF = 1.0;
 	public static double HONEST_PROB = 1.0;
 	public static int PERCENT_HONEST = 50;
-	
+	public int numHumanBeing = 1000;
+	public double width = 150;
+	public double height = 150;
 	public static int EPOCH = 100;
 	/*SDB*/
 
 	public Continuous2D human_being;
-	public double width = 150;
-	public double height = 150;
-	public int numHumanBeing = 1000;
 	public double cohesion = 1.0;
 	public double avoidance = 1.0;
 	public double randomness = 1.0;
