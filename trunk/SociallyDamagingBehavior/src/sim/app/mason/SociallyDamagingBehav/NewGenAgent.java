@@ -25,8 +25,9 @@ public class NewGenAgent implements Steppable{
 		MersenneTwisterFast a=new MersenneTwisterFast();
 		double value=a.nextDouble()/2;
 		double delta=value/10;
-		double probability=a.nextDouble();
-		if(probability<0.5)
+		boolean probability=a.nextBoolean();
+		
+		if(probability)
 			return delta;
 		else 
 			return delta*-1;
@@ -61,6 +62,8 @@ public class NewGenAgent implements Steppable{
 				if(i<riprodurre)
 				{
 					//System.out.println(i+" "+ra.fitness);
+					
+				
 					if(state.random.nextBoolean())
 					{
 						//double dna=ra.dna+(state.random.nextDouble()/10);
