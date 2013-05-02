@@ -56,8 +56,8 @@ public class Honest extends Behaviour{
 //				double dy = humans.tdy(loc.y,other.loc.y);
 //				Double2D m = ((Agent)b.objs[i]).momentum();
 //				count++;
-//				x -= m.x;
-//				y -= m.y;
+//				x += m.x;
+//				y += m.y;
 //			}
 //		}
 		count=1;
