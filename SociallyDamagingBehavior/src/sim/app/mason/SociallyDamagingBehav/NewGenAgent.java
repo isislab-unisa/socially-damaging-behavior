@@ -15,17 +15,18 @@ public class NewGenAgent implements Steppable{
 
 	
 	
+	
 	/**
 	 * Return a random double value in range [-0.05,0.05]
 	 *
 	 * @return a double value 
 	 */
-	private static double delta(){
+	private static double delta(SimState state){
 		
-		MersenneTwisterFast a=new MersenneTwisterFast();
-		double value=a.nextDouble()/2;
+		
+		double value=state.random.nextDouble()/2;
 		double delta=value/10;
-		boolean probability=a.nextBoolean();
+		boolean probability=state.random.nextBoolean();
 		
 		if(probability)
 			return delta;
@@ -67,7 +68,7 @@ public class NewGenAgent implements Steppable{
 					if(state.random.nextBoolean())
 					{
 						//double dna=ra.dna+(state.random.nextDouble()/10);
-						double dna=ra.dna+NewGenAgent.delta();
+						double dna=ra.dna+NewGenAgent.delta(state);
 						
 						if(dna > 10) dna=10;
 						else ra.dna=dna;
