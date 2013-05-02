@@ -1,17 +1,42 @@
 package sim.app.mason.SociallyDamagingBehav;
 
 import java.awt.Color;
-import java.security.AllPermission;
+
 import java.util.Comparator;
 
-import sim.engine.Schedule;
+import ec.util.MersenneTwisterFast;
+
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.Bag;
-import sim.util.Double2D;
+
 
 public class NewGenAgent implements Steppable{
 
+	
+	
+	/**
+	 * Return a random double value in range [-0.05,0.05]
+	 *
+	 * @return a double value 
+	 */
+	private static double delta(){
+		
+		MersenneTwisterFast a=new MersenneTwisterFast();
+		double value=a.nextDouble()/2;
+		double delta=value/10;
+		double probability=a.nextDouble();
+		if(probability<0.5)
+			return delta;
+		else 
+			return delta*-1;
+		
+		
+	}
+
+	
+	
+	
 	@Override
 	public void step(SimState state) {
 		final SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
@@ -38,7 +63,9 @@ public class NewGenAgent implements Steppable{
 					//System.out.println(i+" "+ra.fitness);
 					if(state.random.nextBoolean())
 					{
-						double dna=ra.dna+(state.random.nextDouble()/10);
+						//double dna=ra.dna+(state.random.nextDouble()/10);
+						double dna=ra.dna+NewGenAgent.delta();
+						
 						if(dna > 10) dna=10;
 						else ra.dna=dna;
 					}
@@ -49,6 +76,8 @@ public class NewGenAgent implements Steppable{
 //						else ra.dna=dna;
 //					}
 				
+					
+					
 				}/*else{
 					double dna=state.random.nextInt(9)+state.random.nextDouble();
 					ra.dna=dna;
