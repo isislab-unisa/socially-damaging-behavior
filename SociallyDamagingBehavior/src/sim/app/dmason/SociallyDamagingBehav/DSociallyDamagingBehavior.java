@@ -29,7 +29,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 	public int numHumanBeing = 200;
 	public double width = 150;
 	public double height = 150;
-	public static int EPOCH = 100;
+	public static int EPOCH = 10000;
 	
 	public static double DAMAGING_PAYOFF_PROB = 1.0;
 	public static double DAMAGING_PAYOFF = 1.5;
