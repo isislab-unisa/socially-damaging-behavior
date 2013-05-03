@@ -8,6 +8,11 @@ public class SociallyDamagingBehavior extends SimState
 {
 	private static final long serialVersionUID = 1;
 	/*SDB*/
+	public int numHumanBeing = 1000;
+	public double width = 150;
+	public double height = 150;
+	public static int EPOCH = 100;
+	
 	public static double DAMAGING_PAYOFF_PROB = 1.0;
 	public static double DAMAGING_PAYOFF = 1.5;
 	public static double SOCIAL_INFLUENCE = 0.010;
@@ -21,10 +26,6 @@ public class SociallyDamagingBehavior extends SimState
 	public static double HONEST_PAYOFF = 1.0;
 	public static double HONEST_PROB = 1.0;
 	public static int PERCENT_HONEST = 50;
-	public int numHumanBeing = 1000;
-	public double width = 150;
-	public double height = 150;
-	public static int EPOCH = 100;
 	/*SDB*/
 
 	public Continuous2D human_being;
@@ -33,22 +34,10 @@ public class SociallyDamagingBehavior extends SimState
 	public double randomness = 1.0;
 	public double consistency = 1.0;
 	public double momentum = 1.0;
-	//public double deadHumanProbability = 0.0;
 	public double neighborhood = 10;
 	public double jump = 0.7;  // how far do we move in a timestep?
 
-	public double getCohesion() { return cohesion; }
-	public void setCohesion(double val) { if (val >= 0.0) cohesion = val; }
-	public double getAvoidance() { return avoidance; }
-	public void setAvoidance(double val) { if (val >= 0.0) avoidance = val; }
-	public double getRandomness() { return randomness; }
-	public void setRandomness(double val) { if (val >= 0.0) randomness = val; }
-	public double getConsistency() { return consistency; }
-	public void setConsistency(double val) { if (val >= 0.0) consistency = val; }
-	public double getMomentum() { return momentum; }
-	public void setMomentum(double val) { if (val >= 0.0) momentum = val; }
-	public int getNumHuman() { return numHumanBeing; }
-	public void setNumHuman(int val) { if (val >= 1) numHumanBeing = val; }
+	
 	public double getWidth() { return width; }
 	public void setWidth(double val) { if (val > 0) width = val; }
 	public double getHeight() { return height; }
@@ -105,7 +94,7 @@ public class SociallyDamagingBehavior extends SimState
 		int hon = (numHumanBeing*PERCENT_HONEST)/100;
 		int disHon = numHumanBeing - hon;
 		
-		System.out.println("Honest="+hon+"     DisHon="+disHon);
+		//System.out.println("Honest="+hon+"     DisHon="+disHon);
 		
 		//Create Honest Agent
 		for (int x=0;x<hon;x++) 
@@ -139,6 +128,18 @@ public class SociallyDamagingBehavior extends SimState
 		}
 	}
 	
+	public static double getSOCIAL_INFLUENCE() {
+		return SOCIAL_INFLUENCE;
+	}
+	public static void setSOCIAL_INFLUENCE(double sOCIAL_INFLUENCE) {
+		SOCIAL_INFLUENCE = sOCIAL_INFLUENCE;
+	}
+	public Object getPUNISHIMENT_SEVERITY() {
+		return PUNISHIMENT_SEVERITY;
+	}
+	public void setPUNISHIMENT_SEVERITY(Object pUNISHIMENT_SEVERITY) {
+		PUNISHIMENT_SEVERITY = pUNISHIMENT_SEVERITY;
+	}
 	/**
 	 * Sceglie il tipo di azione da eseguire. Se il valore random Ž < del dna l'azione  onesta(1), 
 	 * se il valore random  compreso tra il dna e 10 l'azione  disonesta(2)
@@ -213,5 +214,47 @@ public class SociallyDamagingBehavior extends SimState
 	{
 		doLoop(SociallyDamagingBehavior.class, args);
 		System.exit(0);
+	}
+	public static double getDAMAGING_PAYOFF_PROB() {
+		return DAMAGING_PAYOFF_PROB;
+	}
+	public static void setDAMAGING_PAYOFF_PROB(double dAMAGING_PAYOFF_PROB) {
+		DAMAGING_PAYOFF_PROB = dAMAGING_PAYOFF_PROB;
+	}
+	public static double getDAMAGING_PAYOFF() {
+		return DAMAGING_PAYOFF;
+	}
+	public static void setDAMAGING_PAYOFF(double dAMAGING_PAYOFF) {
+		DAMAGING_PAYOFF = dAMAGING_PAYOFF;
+	}
+	public static double getPUNISHIMENT_PROB() {
+		return PUNISHIMENT_PROB;
+	}
+	public static void setPUNISHIMENT_PROB(double pUNISHIMENT_PROB) {
+		PUNISHIMENT_PROB = pUNISHIMENT_PROB;
+	}
+	public static double getHONEST_PAYOFF() {
+		return HONEST_PAYOFF;
+	}
+	public static void setHONEST_PAYOFF(double hONEST_PAYOFF) {
+		HONEST_PAYOFF = hONEST_PAYOFF;
+	}
+	public static double getHONEST_PROB() {
+		return HONEST_PROB;
+	}
+	public static void setHONEST_PROB(double hONEST_PROB) {
+		HONEST_PROB = hONEST_PROB;
+	}
+	public static int getPERCENT_HONEST() {
+		return PERCENT_HONEST;
+	}
+	public static void setPERCENT_HONEST(int pERCENT_HONEST) {
+		PERCENT_HONEST = pERCENT_HONEST;
+	}
+	public static int getEPOCH() {
+		return EPOCH;
+	}
+	public static void setEPOCH(int ePOCH) {
+		EPOCH = ePOCH;
 	}    
 }
