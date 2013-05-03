@@ -31,7 +31,7 @@ public class Starter {
 				genParam.setJ(j);
 				genParam.setIp("127.0.0.1");
 				genParam.setPort("61616");
-				DFlockersWithUI t=new DFlockersWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE}
+				DSociallyDamagingBehaviorWithUI t=new DSociallyDamagingBehaviorWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE}
 				Console c=(Console)t.createController();
 	
 				c.pressPause();
@@ -52,7 +52,7 @@ public class Starter {
 					genParam.setJ(j);
 					genParam.setIp("127.0.0.1");
 					genParam.setPort("61616");
-					DFlockersWithUI t=new DFlockersWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE}
+					DSociallyDamagingBehaviorWithUI t=new DSociallyDamagingBehaviorWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE}
 				    Console c=(Console)t.createController();
 				    c.pressPause();
 				    //dpart.add(c);
