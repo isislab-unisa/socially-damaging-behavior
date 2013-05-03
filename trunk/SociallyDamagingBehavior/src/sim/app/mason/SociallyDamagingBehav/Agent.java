@@ -2,15 +2,13 @@
 package sim.app.mason.SociallyDamagingBehav;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import dmason.util.Util;
 import sim.engine.*;
 import sim.field.continuous.*;
 import sim.portrayal.DrawInfo2D;
-import sim.portrayal.SimplePortrayal2D;
-import sim.portrayal.simple.OrientedPortrayal2D;
 import sim.portrayal.simple.OvalPortrayal2D;
 import sim.util.*;
 import ec.util.*;
@@ -27,6 +25,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public Behaviour behavior;
 
 	/*SDB*/
+	ArrayDeque<Agent> agentPast;
 	public double fitness;
 	public double dna;
 	public double ce = 0.0;
@@ -35,10 +34,11 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public boolean honestAction;
 	/*SDB*/
  
-
+	public Agent(){}
 	public Agent(Double2D location,SimState state,double dna) { 
 		//super(new SimplePortrayal2D(), 0, 4.0,Color.GREEN,OrientedPortrayal2D.SHAPE_COMPASS);
 
+		agentPast = new ArrayDeque<Agent>();
 		loc = location;
 		fitness=state.random.nextInt(100);
 		this.dna=dna;
@@ -49,7 +49,6 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	
 	public final void draw(Object object, Graphics2D graphics, DrawInfo2D info)
     {
-  
 	       // this code was stolen from OvalPortrayal2D
 		   graphics.setColor(behav_color);
 		   int x = (int)(info.draw.x - info.draw.width / 2.0);
@@ -57,10 +56,6 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	       int width = (int)(info.draw.width);
 	       int height = (int)(info.draw.height);
 	       graphics.fillOval(x,y,width, height);
-	   
-        
-	   
-
     }
 	   
 	public Bag getNeighbors()
@@ -98,6 +93,18 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public void step(SimState state)
 	{      
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
+		
+		if(agentPast.size()>9)
+		{
+			agentPast.removeFirst();
+			Agent a = ((Agent)(Util.clone(this)));
+			agentPast.add(a);
+		}
+		else
+			{
+				Agent a = ((Agent)(Util.clone(this)));
+				agentPast.add(a);
+			}
 
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
@@ -108,7 +115,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			behav_color=(dna>5)?Color.GREEN:Color.RED;
 	
 			Bag b = getNeighbors();
-	//
+
 			Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
 			Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
 			Double2D rand = randomness(sdbState.random);
@@ -136,7 +143,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			lastd = new Double2D(dx,dy);
 			loc = new Double2D(sdbState.human_being.stx(loc.x + dx), sdbState.human_being.sty(loc.y + dy));
 			sdbState.human_being.setObjectLocation(this, loc);
-		}//else dead=true;
+		}
 	}
 	class Direction extends ArrayList<Agent> implements Comparable
 	{

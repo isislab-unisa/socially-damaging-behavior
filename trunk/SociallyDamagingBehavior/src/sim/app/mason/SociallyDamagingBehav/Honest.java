@@ -3,6 +3,8 @@ package sim.app.mason.SociallyDamagingBehav;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.util.Bag;
@@ -173,6 +175,14 @@ public class Honest extends Behaviour{
 		if (count > 0) { x /= count; y /= count; }
 		return new Double2D(400*x,400*y);      
 	}
+	
+	public Double2D randomness(MersenneTwisterFast r)
+	{
+		double x = r.nextDouble() * 2 - 1.0;
+		double y = r.nextDouble() * 2 - 1.0;
+		double l = Math.sqrt(x * x + y * y);
+		return new Double2D(0.05*x/l,0.05*y/l);
+	}
 
 	@Override
 	public void calculateCEI(Agent a, SociallyDamagingBehavior sdb, Bag n)	//Calcola l'actual social influence
@@ -208,195 +218,89 @@ public class Honest extends Behaviour{
 		a.cei = ((a.tpi/100)*a.ce);	
 	} 
 	
+	public Double2D momentum(Double2D lastd)
+	{
+		return lastd;
+	}
+	
 	@Override
-	public Double2D move(SimState state,Double2D loc, Bag n) {
+	public Double2D move(SimState state, Double2D loc, Bag n) {
 
-		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
-
-		Bag neigh = n;
-		double dx = 0.0;
-		double dy = 0.0;
-		double y_max = sdb.height;
-		double x_max = sdb.width;
-		double ip = 0.0;
-		double sin = 0.0;
-		double raggio = sdb.neighborhood;
-		int fx = 0;
-		int fy = 0;
-		int q0 = 0;
-		int q1 = 0;
-		int q2 = 0;
-		int q3 = 0;
-		int q4 = 0;
-		int q5 = 0;
-		int q6 = 0;
-		int q7 = 0;
-		
-		//Distanze
-		for(Object o:neigh)
-		{
-			Agent n_a=(Agent)o;
-			dx = Math.abs(loc.x-n_a.loc.x)>raggio?x_max-Math.abs(loc.x-n_a.loc.x):Math.abs(loc.x-n_a.loc.x);
-			dy = Math.abs(loc.y-n_a.loc.y)>raggio?y_max-Math.abs(loc.y-n_a.loc.y):Math.abs(loc.y-n_a.loc.y);
-			
-			//seno
-			ip = Math.sqrt(Math.pow(dx, 2)+Math.pow(dy, 2));
-			sin = dy/ip;
-			
-			//Quadranti
-			if(Math.abs(loc.x-n_a.loc.x)>raggio)
-				fx = (loc.x-dx)<0?1:0;
-			else
-				fx = (n_a.loc.x<=loc.x)?1:0;
-			
-			if(Math.abs(loc.y-n_a.loc.y)>raggio)
-				fy = (loc.y-dy)<0?1:0;
-			else
-				fy = (n_a.loc.y<=loc.y)?1:0;
-			
-			//Quadri
-			if(fx==0 && fy==1)
-				if((sin>=0) && (sin<Math.sqrt(2)/2))
-					q0++;
-				else
-					q1++;
-			
-			if(fx==1 && fy==1)
-				if((sin>=0) && (sin<Math.sqrt(2)/2))
-					q3++;
-				else
-					q2++;
-			
-			if(fx==1 && fy==0)
-				if((sin>=0) && (sin<Math.sqrt(2)/2))
-					q4++;
-				else
-					q5++;
-			
-			if(fx==0 && fy==0)
-				if((sin>=0) && (sin<Math.sqrt(2)/2))
-					q7++;
-				else
-					q6++;
-		}
-		
-		System.out.println("q0="+q0+"\nq1="+q1+"\nq2="+q2+"\nq3="+q3+"\nq4="+q4+"\nq5="+q5+"\nq6="+q6+"\nq7="+q7);
-		
-		return null;
 //		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
-//		Bag neigh=agent.getNeighbors();
+//
+//		Bag neigh = n;
+//		double dx = 0.0;
+//		double dy = 0.0;
+//		double y_max = sdb.height;
+//		double x_max = sdb.width;
+//		double ip = 0.0;
+//		double sin = 0.0;
+//		double raggio = sdb.neighborhood;
+//		int fx = 0;
+//		int fy = 0;
+//		int q0 = 0;
+//		int q1 = 0;
+//		int q2 = 0;
+//		int q3 = 0;
+//		int q4 = 0;
+//		int q5 = 0;
+//		int q6 = 0;
+//		int q7 = 0;
 //		
-//		
-//		Direction Q0=new Direction(sdb.jump, sdb.jump);
-//		Direction Q1=new Direction(sdb.jump, sdb.jump);
-//		Direction Q2=new Direction(sdb.jump, sdb.jump);
-//		Direction Q3=new Direction(sdb.jump, sdb.jump);
-//		Direction Q4=new Direction(sdb.jump, sdb.jump);
-//		Direction Q5=new Direction(sdb.jump, sdb.jump);
-//		Direction Q6=new Direction(sdb.jump, sdb.jump);;
-//		Direction Q7=new Direction(sdb.jump, sdb.jump);
-//		
-//	  
-//		ArrayList<Direction> all_dir=new ArrayList<Direction>();
-//		all_dir.add(Q0);
-//		all_dir.add(Q1);
-//		all_dir.add(Q2);
-//		all_dir.add(Q3);
-//		all_dir.add(Q4);
-//		all_dir.add(Q5);
-//		all_dir.add(Q6);
-//		all_dir.add(Q7);
-//	
-//		
+//		//Distanze
 //		for(Object o:neigh)
 //		{
 //			Agent n_a=(Agent)o;
+//			dx = Math.abs(loc.x-n_a.loc.x)>raggio?x_max-Math.abs(loc.x-n_a.loc.x):Math.abs(loc.x-n_a.loc.x);
+//			dy = Math.abs(loc.y-n_a.loc.y)>raggio?y_max-Math.abs(loc.y-n_a.loc.y):Math.abs(loc.y-n_a.loc.y);
 //			
-//			if(n_a instanceof Dishonest && (n_a.loc.y -  loc.y!=0) && (n_a.loc.x -  loc.x)!=0) 
-//			{
-//				double m=(n_a.loc.y -  loc.y)/(n_a.loc.x -  loc.x);
-////				System.out.println(m);
-////				double teta=Math.toRadians(m);
-////				System.out.println(teta);
-////				if(teta>0 && teta <= 45) Q0.add((Honest)n_a);
-////				else if(teta>0 && teta <= 90)  Q1.add((Honest)n_a);
-////				else if(teta>0 && teta <= 135) Q2.add((Honest)n_a);
-////				else if(teta>0 && teta <= 180)  Q3.add((Honest)n_a);
-////				else if(teta>0 && teta <= 225)  Q4.add((Honest)n_a);
-////				else if(teta>0 && teta <= 270)  Q5.add((Honest)n_a);
-////				else if(teta>0 && teta <= 315)  Q6.add((Honest)n_a);
-////				else if(teta>0 && teta <= 360)  Q7.add((Honest)n_a);
-//				
-//				if(n_a.loc.x > loc.x && n_a.loc.y > loc.y)
-//				{
-//					double ipo=Math.sqrt(Math.pow((n_a.loc.x-loc.x),2)
-//							+ Math.pow((n_a.loc.y-loc.y),2) );
-//					double sin=ipo/(n_a.loc.x-loc.x);
-//					if(sin>0 && sin<=Math.sqrt(2)/2)
-//					
-//						 Q0.add((Dishonest)n_a);
-//					else
-//						 Q1.add((Dishonest)n_a);
-//					
-//				}else
-//					if(n_a.loc.x < loc.x && n_a.loc.y > loc.y)
-//					{
-//						double ipo=Math.sqrt(Math.pow(((-1*n_a.loc.x)-(-1*loc.x)),2) 
-//								+ Math.pow((n_a.loc.y-loc.y),2) );
-//						double sin=ipo/((-1*n_a.loc.x)-(-1*loc.x));
-//						if(sin>0 && sin<=Math.sqrt(2)/2)
-//						
-//							 Q2.add((Dishonest)n_a);
-//						else
-//							 Q3.add((Dishonest)n_a);
-//						
-//					}else
-//						if(n_a.loc.x < loc.x && n_a.loc.y < loc.y)
-//						{
-//							double ipo=Math.sqrt(Math.pow(((-1*n_a.loc.x)-(-1*loc.x)),2) 
-//									+ Math.pow(((-1*n_a.loc.y)-(-1*loc.y)),2) );
-//							double sin=ipo/((-1*n_a.loc.x)-(-1*loc.x));
-//							if(sin>0 && sin<=Math.sqrt(2)/2)
-//							
-//								 Q4.add((Dishonest)n_a);
-//							else
-//								 Q5.add((Dishonest)n_a);
-//							
+//			//seno
+//			ip = Math.sqrt(Math.pow(dx, 2)+Math.pow(dy, 2));
+//			sin = dy/ip;
 //			
-//						}else
-//							if(n_a.loc.x > loc.x && n_a.loc.y < loc.y)
-//							{
-//								double ipo=Math.sqrt(Math.pow(((n_a.loc.x)-(loc.x)),2) 
-//										+ Math.pow(((-1*n_a.loc.y)-(-1*loc.y)),2) );
-//								double sin=ipo/((n_a.loc.x)-(loc.x));
-//								if(sin>0 && sin<=Math.sqrt(2)/2)
-//								
-//									 Q6.add((Dishonest)n_a);
-//								else
-//									 Q7.add((Dishonest)n_a);
-//							}
-//							
-//				
-//			}
-//
+//			//Quadranti
+//			if(Math.abs(loc.x-n_a.loc.x)>raggio)
+//				fx = (loc.x-dx)<0?1:0;
+//			else
+//				fx = (n_a.loc.x<=loc.x)?1:0;
+//			
+//			if(Math.abs(loc.y-n_a.loc.y)>raggio)
+//				fy = (loc.y-dy)<0?1:0;
+//			else
+//				fy = (n_a.loc.y<=loc.y)?1:0;
+//			
+//			//Quadri
+//			if(fx==0 && fy==1)
+//				if((sin>=0) && (sin<Math.sqrt(2)/2))
+//					q0++;
+//				else
+//					q1++;
+//			
+//			if(fx==1 && fy==1)
+//				if((sin>=0) && (sin<Math.sqrt(2)/2))
+//					q3++;
+//				else
+//					q2++;
+//			
+//			if(fx==1 && fy==0)
+//				if((sin>=0) && (sin<Math.sqrt(2)/2))
+//					q4++;
+//				else
+//					q5++;
+//			
+//			if(fx==0 && fy==0)
+//				if((sin>=0) && (sin<Math.sqrt(2)/2))
+//					q7++;
+//				else
+//					q6++;
 //		}
 //		
-//		Collections.sort(all_dir);
+//		System.out.println("q0="+q0+"\nq1="+q1+"\nq2="+q2+"\nq3="+q3+"\nq4="+q4+"\nq5="+q5+"\nq6="+q6+"\nq7="+q7);
 //		
-//		int min=all_dir.get(0).size();
-//		if(min!=0)
-//		{
-//			Agent aa=all_dir.get(0).get(state.random.nextInt(all_dir.get(0).size()));
-//			return aa.loc;
-//		}
-//		else
-//		{
-//			//System.out.println(all_dir.get(0).dx+" "+all_dir.get(0).dy);
-//			return new Double2D(loc.x+all_dir.get(0).dx,
-//					loc.y+all_dir.get(0).dy);
-//		}
+		return null;
 	}
 
+	
 	@Override
 	public void socialInfluence(Agent agent, SimState state, Bag neigh) {
 		// TODO Auto-generated method stub
