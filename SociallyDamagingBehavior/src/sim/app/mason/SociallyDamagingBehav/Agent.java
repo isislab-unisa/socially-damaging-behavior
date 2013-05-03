@@ -23,7 +23,6 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public Double2D lastd = new Double2D(0,0);
 	public Continuous2D humans;
 	public SociallyDamagingBehavior theHuman;
-	public boolean dead = false;
 	public  Color behav_color;
 	public Behaviour behavior;
 
@@ -70,8 +69,6 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	}
 
 	public double getOrientation() { return orientation2D(); }
-	public boolean isDead() { return dead; }
-	public void setDead(boolean val) { dead = val; }
 
 	public void setOrientation2D(double val)
 	{
@@ -102,7 +99,6 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	{      
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
 
-		if (dead) return;
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
