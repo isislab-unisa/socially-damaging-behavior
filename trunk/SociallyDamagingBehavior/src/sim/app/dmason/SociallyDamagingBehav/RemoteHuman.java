@@ -1,7 +1,6 @@
 package sim.app.dmason.SociallyDamagingBehav;
 
 import java.io.Serializable;
-
 import sim.portrayal.simple.OvalPortrayal2D;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -28,4 +27,4 @@ public abstract class RemoteHuman<E> extends OvalPortrayal2D implements Serializ
 	    public void setPos(E pos) { this.pos = pos; }
 	    public String getId() {return id;	}
 	    public void setId(String id) {this.id = id;}	
-	}
+}

@@ -1,17 +1,13 @@
 package sim.app.dmason.SociallyDamagingBehav;
 
-import java.util.Iterator;
-
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.continuous.DContinuous2D;
-
 import ec.util.MersenneTwisterFast;
-
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
 
-public class Dishonest extends DBehaviour{
+public class Dishonest extends DBehaviour {
 
 	@Override
 	public void action(DHuman agent,SimState state,Bag neigh) {

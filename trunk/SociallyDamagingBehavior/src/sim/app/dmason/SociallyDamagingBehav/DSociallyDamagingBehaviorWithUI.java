@@ -1,17 +1,12 @@
 package sim.app.dmason.SociallyDamagingBehav;
 import sim.engine.*;
-import sim.app.mason.SociallyDamagingBehav.Honest;
 import sim.display.*;
 import sim.portrayal.continuous.*;
-
 import javax.swing.*;
 import dmason.batch.data.GeneralParam;
-import dmason.sim.engine.DistributedState;
 import java.awt.*;
-
 import sim.portrayal.simple.*;
 import sim.portrayal.SimplePortrayal2D;
-import sim.util.Double2D;
 
 public class DSociallyDamagingBehaviorWithUI extends GUIState
 {
