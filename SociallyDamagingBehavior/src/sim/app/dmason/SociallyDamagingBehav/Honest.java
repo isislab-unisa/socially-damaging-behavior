@@ -1,12 +1,7 @@
 package sim.app.dmason.SociallyDamagingBehav;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.continuous.DContinuous2D;
-
 import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.util.Bag;

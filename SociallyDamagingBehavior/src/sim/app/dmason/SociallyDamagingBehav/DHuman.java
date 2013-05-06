@@ -6,14 +6,15 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import dmason.sim.engine.DistributedState;
-import dmason.sim.field.continuous.DContinuous2D;
 import dmason.util.Util;
-import sim.engine.*;
-import sim.field.continuous.*;
+import ec.util.MersenneTwisterFast;
+
+import sim.engine.SimState;
+import sim.engine.Steppable;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.Orientable2D;
-import sim.util.*;
-import ec.util.*;
+import sim.util.Bag;
+import sim.util.Double2D;
 
 public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientable2D
 {
@@ -21,8 +22,6 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 
 	public Double2D loc = new Double2D(0,0);
 	public Double2D lastd = new Double2D(0,0);
-	public DContinuous2D humans;
-	public DSociallyDamagingBehavior theHuman;
 	public Color behav_color;
 	public DBehaviour behavior;
 
@@ -37,15 +36,12 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 	/*SDB*/
  
 	public DHuman(){}
-	public DHuman(Double2D location, DistributedState state, double dna) { 
+	public DHuman(DistributedState state, Double2D location) { 
 		//super(new SimplePortrayal2D(), 0, 4.0,Color.GREEN,OrientedPortrayal2D.SHAPE_COMPASS);
 
 		agentPast = new ArrayDeque<DHuman>();
 		loc = location;
 		fitness=state.random.nextInt(100);
-		this.dna=dna;
-		behavior=(dna>5)?new Honest():new Dishonest();
-		behav_color=(dna>5)?Color.GREEN:Color.RED;
 	}
 
 	
@@ -60,9 +56,9 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 	       graphics.fillOval(x,y,width, height);
     }
 	   
-	public Bag getNeighbors()
+	public Bag getNeighbors(DSociallyDamagingBehavior dsdbState)
 	{
-		return humans.getObjectsExactlyWithinDistance(loc, theHuman.neighborhood, true);
+		return dsdbState.human_being.getObjectsExactlyWithinDistance(loc, dsdbState.neighborhood, true);
 	}
 
 	public double getOrientation() { return orientation2D(); }
@@ -112,12 +108,9 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 		{
 			loc = sdbState.human_being.getObjectLocation(this);
 	
-			behavior=(dna>5)?new Honest():new Dishonest();
-			behav_color=(dna>5)?Color.GREEN:Color.RED;
-	
-			Bag b = getNeighbors();
+			Bag b = getNeighbors(sdbState);
 
-			Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
+			Double2D avoid = behavior.avoidance(this, b, sdbState.human_being);
 			Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
 			Double2D rand = randomness(sdbState.random);
 			Double2D cons = behavior.consistency(this,b,sdbState.human_being);
@@ -143,9 +136,10 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 		//	loc=move(state, loc);
 			lastd = new Double2D(dx,dy);
 			loc = new Double2D(sdbState.human_being.stx(loc.x + dx), sdbState.human_being.sty(loc.y + dy));
-			sdbState.human_being.setObjectLocation(this, loc);
+			sdbState.human_being.setDistributedObjectLocation(loc, this, sdbState);
 		}
 	}
+	
 	class Direction extends ArrayList<DHuman> implements Comparable
 	{
 		double dx;
@@ -162,16 +156,15 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 			return 0;
 		}
 	}
-	public double getFitness() {
-		return fitness;
-	}
-	public void setFitness(double fitness) {
-		this.fitness = fitness;
-	}
-	public double getDna() {
-		return dna;
-	}
-	public void setDna(double dna) {
+	public double getFitness() {return fitness;}
+	public void setFitness(double fitness) {this.fitness = fitness;}
+	public double getDna() {return dna;}
+	public void setDna(double dna) 
+	{
 		this.dna = dna;
+		behavior=(dna>5)?new Honest():new Dishonest();
+		behav_color=(dna>5)?Color.GREEN:Color.RED;
 	}
+	
+	public Color getBehav_Color(){return behav_color;}
 }
