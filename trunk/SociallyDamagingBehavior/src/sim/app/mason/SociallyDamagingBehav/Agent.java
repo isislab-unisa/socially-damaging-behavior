@@ -26,6 +26,7 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 
 	/*SDB*/
 	ArrayDeque<Agent> agentPast;
+	
 	public double fitness;
 	public double dna;
 	public double ce = 0.0;
@@ -34,6 +35,9 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public boolean honestAction;
 	/*SDB*/
  
+	
+	
+	
 	public Agent(){}
 	public Agent(Double2D location,SimState state,double dna) { 
 		//super(new SimplePortrayal2D(), 0, 4.0,Color.GREEN,OrientedPortrayal2D.SHAPE_COMPASS);
@@ -90,9 +94,15 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		return new Double2D(0.05*x/l,0.05*y/l);
 	}
 
+	
+	
+	
 	public void step(SimState state)
 	{      
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
+		
+		
+		
 		
 		if(agentPast.size()>9)
 		{
@@ -105,6 +115,10 @@ public class Agent extends OvalPortrayal2D implements Steppable//, sim.portrayal
 				Agent a = ((Agent)(Util.clone(this)));
 				agentPast.add(a);
 			}
+		
+		
+		
+		
 
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%sdb.EPOCH!=0)
 		{
