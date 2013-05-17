@@ -94,6 +94,8 @@ public class SociallyDamagingBehavior extends SimState
 
 	    numHonest=hon;
 	    numDishonest=disHon;
+	    numDishonestAction=0;
+	    numHonestAction=0;
 		
 		//System.out.println("Honest="+hon+"     DisHon="+disHon);
 		allHumans = new Bag();
@@ -182,21 +184,32 @@ public class SociallyDamagingBehavior extends SimState
 	 */
 	public boolean tryHonestAgentAction()
 	{
-		return this.random.nextDouble()<HONEST_PROB?
-				true:
-					false;
-
+		boolean isHonest=((this.random.nextDouble()<HONEST_PROB));
+		if(isHonest){
+			if((this.numHonestAction+this.numDishonestAction)==this.numHumanBeing){
+				this.numHonestAction=1;
+				this.numDishonestAction=0;
+			}
+			else
+				this.numHonestAction++;
+		}
+		return isHonest;
 	}
 	/**
 	 *  try dishonest action 
 	 */
 	public boolean tryDisHonestAgentAction()
-	{
-		
-		return this.random.nextDouble()<DAMAGING_PAYOFF_PROB?
-				true:
-					false;
-
+	{		
+		boolean isDishonest=((this.random.nextDouble()<HONEST_PROB));
+		if(isDishonest){
+			if((this.numHonestAction+this.numDishonestAction)==this.numHumanBeing){
+				this.numDishonestAction=1;
+				this.numHonestAction=0;
+			}
+			else
+				this.numDishonestAction++;
+		}
+		return isDishonest;
 	}
 
 	/**

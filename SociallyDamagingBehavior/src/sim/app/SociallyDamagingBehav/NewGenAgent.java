@@ -25,7 +25,7 @@ public class NewGenAgent implements Steppable{
 			
 			sdbState.numHonest=0;
 			sdbState.numDishonest=0;
-			sdbState.numDishonest=0;
+			sdbState.numDishonestAction=0;
 			sdbState.numHonestAction=0;
 			
 			Bag all=(Bag)Util.clone(sdbState.human_being.allObjects);
@@ -96,8 +96,8 @@ public class NewGenAgent implements Steppable{
 				Human h = (Human)o;
 				
 				if(h.behavior instanceof Honest)
-					sdbState.numHonest++;else sdbState.numDishonest++;
-				
+					sdbState.numHonest++;
+				else sdbState.numDishonest++;
 				
 				sdbState.human_being.setObjectLocation(h, h.loc);
 				sdbState.schedule.scheduleOnce(h);

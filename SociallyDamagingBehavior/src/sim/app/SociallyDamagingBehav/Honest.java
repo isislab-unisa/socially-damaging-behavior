@@ -64,7 +64,6 @@ public class Honest extends Behaviour{
 		{
 			agent.honestAction=true;
 			if(sdb.tryHonestAgentAction()){
-				sdb.numHonestAction++;
 				agent.fitness+=SociallyDamagingBehavior.HONEST_PAYOFF;}
 		}
 		else
@@ -72,8 +71,6 @@ public class Honest extends Behaviour{
 			agent.honestAction=false;
 			if(sdb.tryDisHonestAgentAction())
 			{
-				
-				sdb.numDishonestAction++;
 				agent.fitness+=SociallyDamagingBehavior.DAMAGING_PAYOFF;
 				if(allAgents.size()!=0)
 					((Human)allAgents.get(sdb.random.nextInt(allAgents.size()))).fitness-=SociallyDamagingBehavior.DAMAGING_PAYOFF;
