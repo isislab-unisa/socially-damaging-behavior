@@ -25,6 +25,8 @@ public class NewGenAgent implements Steppable{
 			
 			sdbState.numHonest=0;
 			sdbState.numDishonest=0;
+			sdbState.numDishonest=0;
+			sdbState.numHonestAction=0;
 			
 			Bag all=(Bag)Util.clone(sdbState.human_being.allObjects);
 			sdbState.totalFitness = 0;
