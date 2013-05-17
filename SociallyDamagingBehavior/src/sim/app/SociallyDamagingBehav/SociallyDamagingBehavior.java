@@ -52,8 +52,8 @@ public class SociallyDamagingBehavior extends SimState
 	public double lastTotalFitness = 0;
 	public Bag allHumans;
 	public Bag lastAllHumans;
-	public int honest=0;
-	public int dishonest=0;
+	public int numHonest=0;
+	public int numDishonest=0;
 
 	/** Creates a SDB simulation with the given random number seed. */
 	public SociallyDamagingBehavior(long seed){super(0);}
@@ -77,8 +77,8 @@ public class SociallyDamagingBehavior extends SimState
 		int hon = (numHumanBeing*PERCENT_HONEST)/100;
 		int disHon = numHumanBeing - hon;
 
-	    honest=hon;
-	    dishonest=disHon;
+	    numHonest=hon;
+	    numDishonest=disHon;
 		
 		//System.out.println("Honest="+hon+"     DisHon="+disHon);
 		allHumans = new Bag();
@@ -148,12 +148,12 @@ public class SociallyDamagingBehavior extends SimState
 
 
 	public int getHonest() {
-		return honest;
+		return numHonest;
 	}
 
 
 	public int getDishonest() {
-		return dishonest;
+		return numDishonest;
 	}
 
 	/*
