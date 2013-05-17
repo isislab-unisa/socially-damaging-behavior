@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+
 import dmason.util.Util;
 import sim.engine.*;
 import sim.field.continuous.*;
@@ -60,7 +61,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	
 	public Human(Double2D location, SimState state, double dna) { 
 		//super(new SimplePortrayal2D(), 0, 4.0,Color.GREEN,OrientedPortrayal2D.SHAPE_COMPASS);
-
+		
 		theHuman = (SociallyDamagingBehavior)state;
 		humans = theHuman.human_being;
 		agentPast = new ArrayDeque<Human>();

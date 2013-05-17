@@ -71,7 +71,7 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
                 this,
                 new OrientedPortrayal2D(
                     new SimplePortrayal2D(), 0, 4.0,
-                    (sdbState.human_being.allObjects.objs[x] instanceof Honest)?
+                    (((Human)(sdbState.human_being.allObjects.objs[x])).behavior instanceof Honest)?
                     		(Color.green): (Color.red)
 					,
                     OrientedPortrayal2D.SHAPE_COMPASS),
