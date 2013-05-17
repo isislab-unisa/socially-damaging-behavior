@@ -38,6 +38,9 @@ public class SociallyDamagingBehavior extends SimState
 	public static double HONEST_PAYOFF = 1.0;
 	public static double HONEST_PROB = 1.0;
 	public static int PERCENT_HONEST = 50;
+	
+	public static final int HOSNEST_ACTION=1;
+	public static final int DISHOSNEST_ACTION=2;
 	/*SDB*/
 
 	public Continuous2D human_being;
@@ -54,7 +57,19 @@ public class SociallyDamagingBehavior extends SimState
 	public Bag lastAllHumans;
 	public int numHonest=0;
 	public int numDishonest=0;
+	public int numHonestAction=0;
+	public int numDishonestAction=0;
 
+	public int getNumHonestAction() {
+		return numHonestAction;
+	}
+
+	
+	public int getNumDishonestAction() {
+		return numDishonestAction;
+	}
+
+	
 	/** Creates a SDB simulation with the given random number seed. */
 	public SociallyDamagingBehavior(long seed){super(0);}
 
@@ -147,24 +162,8 @@ public class SociallyDamagingBehavior extends SimState
 	}
 
 
-	public int getHonest() {
-		return numHonest;
-	}
+	
 
-
-	public int getDishonest() {
-		return numDishonest;
-	}
-
-	/*
-	public void setHonest(int honest) {
-		this.honest = honest;
-	}
-
-	public void setDishonest(int dishonest) {
-		this.dishonest = dishonest;
-	}
-*/
 	/**
 	 * Choose kind of action. if random value < dna -->honest action(1), 
 	 * if  dna<random value < 10 -  ->dishonest action(2)
@@ -173,7 +172,7 @@ public class SociallyDamagingBehavior extends SimState
 	 */
 	public int chooseAction(double dna)
 	{
-		return this.random.nextInt(10)+this.random.nextDouble()<dna?1:2;
+		return this.random.nextInt(10)+this.random.nextDouble()<dna?this.HOSNEST_ACTION:this.DISHOSNEST_ACTION;
 	}
 
 
@@ -193,6 +192,7 @@ public class SociallyDamagingBehavior extends SimState
 	 */
 	public boolean tryDisHonestAgentAction()
 	{
+		
 		return this.random.nextDouble()<DAMAGING_PAYOFF_PROB?
 				true:
 					false;
@@ -275,6 +275,14 @@ public class SociallyDamagingBehavior extends SimState
 	public void setWidth(double val) { if (val > 0) width = val; }
 	public double getHeight() { return height; }
 	public void setHeight(double val) { if (val > 0) height = val; }
+	public int getNumHonest() {
+		return numHonest;
+	}
+
+	public int getNumDishonest() {
+		return numDishonest;
+	}
+
 	public double getNeighborhood() { return neighborhood; }
 	public static int getMIN_AOI_AGGREGATION_MODEL3() {return MIN_AOI_AGGREGATION_MODEL3;}
 	public static void setMIN_AOI_AGGREGATION_MODEL3(int mIN_AOI_AGGREGATION_MODEL3) {MIN_AOI_AGGREGATION_MODEL3 = mIN_AOI_AGGREGATION_MODEL3;}

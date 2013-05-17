@@ -56,10 +56,10 @@ public class Dishonest extends Behaviour{
 	public void actionModel_0(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
 		Bag allAgents = sdb.human_being.getAllObjects();
-		int action = sdb.random.nextInt(10)+sdb.random.nextDouble()<agent.dna?1:2; 
+		int action = sdb.random.nextInt(10)+sdb.random.nextDouble()<agent.dna?sdb.HOSNEST_ACTION:sdb.DISHOSNEST_ACTION; 
 				//sdb.random.nextDouble()*10<agent.dna?1:2; 
 				//sdb.chooseAction(agent.dna);
-		if(action == 1)
+		if(action == sdb.HOSNEST_ACTION)
 		{
 			agent.honestAction=true;
 			if(sdb.tryHonestAgentAction())

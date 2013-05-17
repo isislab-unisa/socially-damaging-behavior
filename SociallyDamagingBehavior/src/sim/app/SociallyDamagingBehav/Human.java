@@ -87,6 +87,8 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	{      
 		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
 
+		
+		
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%SociallyDamagingBehavior.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
