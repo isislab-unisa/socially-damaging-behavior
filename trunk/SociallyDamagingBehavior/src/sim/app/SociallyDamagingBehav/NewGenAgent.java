@@ -23,8 +23,8 @@ public class NewGenAgent implements Steppable{
 		if(state.schedule.getSteps()!=0 && state.schedule.getSteps()%SociallyDamagingBehavior.EPOCH==0)
 		{
 			
-			sdbState.honest=0;
-			sdbState.dishonest=0;
+			sdbState.numHonest=0;
+			sdbState.numDishonest=0;
 			
 			Bag all=(Bag)Util.clone(sdbState.human_being.allObjects);
 			sdbState.totalFitness = 0;
@@ -94,7 +94,7 @@ public class NewGenAgent implements Steppable{
 				Human h = (Human)o;
 				
 				if(h.behavior instanceof Honest)
-					sdbState.honest++;else sdbState.dishonest++;
+					sdbState.numHonest++;else sdbState.numDishonest++;
 				
 				
 				sdbState.human_being.setObjectLocation(h, h.loc);
