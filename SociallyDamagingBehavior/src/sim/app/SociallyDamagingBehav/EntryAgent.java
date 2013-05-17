@@ -2,26 +2,26 @@ package sim.app.SociallyDamagingBehav;
 
 public class EntryAgent <D, H>{
 
-	private double fitSum;
-	private Human h;
+	private D fitSum;
+	private H h;
 	
-	public double getFitSum() {
+	public D getFitSum() {
 		return fitSum;
 	}
 
-	public void setFitSum(double fitSum) {
+	public void setFitSum(D fitSum) {
 		this.fitSum = fitSum;
 	}
 
-	public Human getH() {
+	public H getH() {
 		return h;
 	}
 
-	public void setH(Human h) {
+	public void setH(H h) {
 		this.h = h;
 	}
 
-	public EntryAgent(double fitsum, Human h) {
+	public EntryAgent(D fitsum, H h) {
 
 		this.fitSum = fitsum;
 		this.h = h;

@@ -9,11 +9,11 @@ public class SociallyDamagingBehavior extends SimState
 {
 	private static final long serialVersionUID = 1;
 	/*SDB*/
-	public int numHumanBeing = 1000;
+	public int numHumanBeing = 100;
 	public double width = 150;
 	public double height = 150;
 	public static int EPOCH = 100;
-	
+
 	public static int MODEL0_RANDOM_DAMAGING=0;
 	public static int MODEL1_PROPORTIONAL_DAMAGING=1;
 	public static int MODEL2_RANDOM_MOVEMENT=2;
@@ -23,10 +23,10 @@ public class SociallyDamagingBehavior extends SimState
 	public static int MIN_AOI_AGGREGATION_MODEL3=5;
 	public static int MAX_AOI_AGGREGATION_MODEL3=10;
 	public static double RHO_MODEL4_MEMORY = 0.2;
-	
+
 	public static double DAMAGING_PAYOFF_PROB = 1.0;
-	public static double DAMAGING_PAYOFF = 1.5;
-	public static double SOCIAL_INFLUENCE = 0.010;
+	public static double DAMAGING_PAYOFF = 2;//1.5;
+	public static double SOCIAL_INFLUENCE = 0.0;//0.010;
 	public static int PERCENTAGE_PAYOFF_FITNESS=10;
 
 	public static double PUNISHIMENT_PROB = 1.0;
@@ -52,6 +52,8 @@ public class SociallyDamagingBehavior extends SimState
 	public double lastTotalFitness = 0;
 	public Bag allHumans;
 	public Bag lastAllHumans;
+	public int honest=0;
+	public int dishonest=0;
 
 	/** Creates a SDB simulation with the given random number seed. */
 	public SociallyDamagingBehavior(long seed){super(0);}
@@ -60,9 +62,9 @@ public class SociallyDamagingBehavior extends SimState
 	public void start()
 	{
 		super.start();
-		
 		this.schedule.scheduleRepeating(new NewGenAgent());
-
+		
+		
 		// set up the human field.  It looks like a discretization
 		// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
 		// that's 16 hash lookups! I would have guessed that 
@@ -71,52 +73,55 @@ public class SociallyDamagingBehavior extends SimState
 		human_being = new Continuous2D(neighborhood/1.5,width,height);
 
 		// make a bunch of humans and schedule 'em.  
-		
+
 		int hon = (numHumanBeing*PERCENT_HONEST)/100;
 		int disHon = numHumanBeing - hon;
+
+	    honest=hon;
+	    dishonest=disHon;
 		
 		//System.out.println("Honest="+hon+"     DisHon="+disHon);
 		allHumans = new Bag();
-		
+
 		//Create Honest Agent
 		for (int x=0;x<hon;x++) 
 		{
 			Double2D location = new Double2D(random.nextDouble()*width, random.nextDouble() * height);
 			/*SDB*/
 			double dna=5+this.random.nextInt(4)+this.random.nextDouble(); //5<value<10
-			
+
 			Human hAgent = new Human(location,this,dna);
 			/*SDB*/
 			human_being.setObjectLocation(hAgent, location);
 			hAgent.humans = human_being;
 			hAgent.theHuman = this;
-			
-			allHumans.add(new EntryAgent<Double, Human>(0, hAgent));//////Model 2-3
+
+			allHumans.add(new EntryAgent<Double, Human>(0.0, hAgent));//////Model 2-3
 
 			//schedule.scheduleRepeating(hAgent);
 			schedule.scheduleOnce(hAgent);
 		}
-		
+
 		//Create Dishonest Agent
 		for(int x=0;x<disHon;x++)
 		{
 			Double2D location = new Double2D(random.nextDouble()*width, random.nextDouble() * height);
 			/*SDB*/
-			
+
 			double dna=this.random.nextInt(4)+this.random.nextDouble(); //0<value<5
-			
+
 			Human dhAgent = new Human(location,this,dna);
 			/*SDB*/
 			human_being.setObjectLocation(dhAgent, location);
 			dhAgent.humans = human_being;
 			dhAgent.theHuman = this;
-			
-			allHumans.add(new EntryAgent<Double, Human>(0, dhAgent));//////Model 2-3
-			
+
+			allHumans.add(new EntryAgent<Double, Human>(0.0, dhAgent));//////Model 2-3
+
 			//schedule.scheduleRepeating(dhAgent);
 			schedule.scheduleOnce(dhAgent);
 		}
-		
+
 		//////Model 2-3
 		allHumans.sort(new Comparator<EntryAgent<Double, Human>>() {
 			@Override
@@ -126,7 +131,7 @@ public class SociallyDamagingBehavior extends SimState
 				return 0;
 			}
 		});
-		
+
 		for(Object o : allHumans)
 		{
 			EntryAgent<Double, Human> ea = (EntryAgent)o;
@@ -140,8 +145,26 @@ public class SociallyDamagingBehavior extends SimState
 		totalFitness = 0;
 		//////End Model 2-3
 	}
-	
-	
+
+
+	public int getHonest() {
+		return honest;
+	}
+
+
+	public int getDishonest() {
+		return dishonest;
+	}
+
+	/*
+	public void setHonest(int honest) {
+		this.honest = honest;
+	}
+
+	public void setDishonest(int dishonest) {
+		this.dishonest = dishonest;
+	}
+*/
 	/**
 	 * Choose kind of action. if random value < dna -->honest action(1), 
 	 * if  dna<random value < 10 -  ->dishonest action(2)
@@ -152,8 +175,8 @@ public class SociallyDamagingBehavior extends SimState
 	{
 		return this.random.nextInt(10)+this.random.nextDouble()<dna?1:2;
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * try honest action
@@ -175,7 +198,7 @@ public class SociallyDamagingBehavior extends SimState
 					false;
 
 	}
-	
+
 	/**
 	 * 
 	 * @param a     
@@ -184,30 +207,40 @@ public class SociallyDamagingBehavior extends SimState
 	 * @return true   if agent is punished
 	 * @return false  if agent is not punished
 	 */
-	public boolean legalPunishment(Human a,Bag neigh)
-	{
-		
+	public boolean legalPunishment(Human a,Bag neigh){
+
 		double prob_pun=SociallyDamagingBehavior.PUNISHIMENT_PROB;
-		if(neigh.size()>0)
+		// neighborhood influence punishment only for model 2 3 4
+		if(SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL2_RANDOM_MOVEMENT ||
+				SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL3_AGGREGATION_MOVEMENT ||
+				SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL4_MEMORY )
+
 		{
-			int H_neigh=0;
-			int DH_neigh=0;
-			for(Object o:neigh)
+			if(neigh.size()>0)
 			{
-				Human n_a=(Human)o;
-				if(n_a.behavior instanceof Honest) H_neigh++;
-				else DH_neigh++;
-				
+				int H_neigh=0;
+				int DH_neigh=0;
+				for(Object o:neigh)
+				{
+					Human n_a=(Human)o;
+					if(n_a.behavior instanceof Honest) H_neigh++;
+					else DH_neigh++;
+
+				}
+				int tot=H_neigh+DH_neigh;
+				double perc_H=(H_neigh*100)/tot;
+				double perc_DH=(DH_neigh*100)/tot;
+				double p_perc_h=perc_H/100;
+				double p_perc_dh=perc_DH/100;
+				if(H_neigh>DH_neigh) prob_pun=SociallyDamagingBehavior.PUNISHIMENT_PROB+p_perc_h;
+				else if(H_neigh<DH_neigh) prob_pun=(SociallyDamagingBehavior.PUNISHIMENT_PROB-p_perc_dh);
+
 			}
-			int tot=H_neigh+DH_neigh;
-			double perc_H=(H_neigh*100)/tot;
-			double perc_DH=(DH_neigh*100)/tot;
-			double p_perc_h=perc_H/100;
-			double p_perc_dh=perc_DH/100;
-			if(H_neigh>DH_neigh) prob_pun=SociallyDamagingBehavior.PUNISHIMENT_PROB+p_perc_h;
-			else if(H_neigh<DH_neigh) prob_pun=(SociallyDamagingBehavior.PUNISHIMENT_PROB-p_perc_dh);
-			
-		}
+
+
+		}	
+
+
 		double random_pun=this.random.nextDouble();
 		if(random_pun < prob_pun)
 		{
@@ -222,20 +255,20 @@ public class SociallyDamagingBehavior extends SimState
 				{
 					a.fitness-=DAMAGING_PAYOFF/2;
 				}
-				return true;
+			return true;
 		}
 		else
 			return false;
 
 	}
-	
+
 	/*SDB*/
 	public static void main(String[] args)
 	{
 		doLoop(SociallyDamagingBehavior.class, args);
 		System.exit(0);
 	}
-	
+
 	public int getNumHumanBeing() {return numHumanBeing;}
 	public void setNumHumanBeing(int numHumanBeing) {this.numHumanBeing = numHumanBeing;}
 	public double getWidth() { return width; }

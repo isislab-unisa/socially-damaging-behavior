@@ -55,7 +55,11 @@ public class Honest extends Behaviour{
 	 */
 	public void actionModel_0(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 		Bag allAgents = sdb.human_being.getAllObjects();
-		int action = sdb.chooseAction(agent.dna);
+		
+		int action = sdb.random.nextInt(10)+sdb.random.nextDouble()<agent.dna?1:2;
+				//sdb.random.nextDouble()*10>agent.dna?1:2; 
+				//sdb.chooseAction(agent.dna);
+		
 		if(action == 1)
 		{
 			agent.honestAction=true;
@@ -101,7 +105,7 @@ public class Honest extends Behaviour{
 
 				Human damaged;
 				for (int i = 1; i < sdb.lastAllHumans.size(); i++) {
-					if(((EntryAgent)(sdb.lastAllHumans.get(i))).getFitSum()>var)
+					if(((EntryAgent<Double,Human>)(sdb.lastAllHumans.get(i))).getFitSum()>var)
 					{
 						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)sdb.lastAllHumans.get(i-1);
 						damaged = ea.getH();
@@ -147,7 +151,7 @@ public class Honest extends Behaviour{
 
 					Human damaged;
 					for (int i = 1; i < agent.entryNeigh.size(); i++) {
-						if(((EntryAgent)(agent.entryNeigh.get(i))).getFitSum()>var)
+						if(((EntryAgent<Double,Human>)(agent.entryNeigh.get(i))).getFitSum()>var)
 						{
 							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeigh.get(i-1);
 							damaged = ea.getH();
@@ -204,7 +208,7 @@ public class Honest extends Behaviour{
 
 					Human damaged;
 					for (int i = 1; i < agent.entryNeigh.size(); i++) {
-						if(((EntryAgent)(agent.entryNeigh.get(i))).getFitSum()>var)
+						if(((EntryAgent<Double,Human>)(agent.entryNeigh.get(i))).getFitSum()>var)
 						{
 							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeigh.get(i-1);
 							damaged = ea.getH();
