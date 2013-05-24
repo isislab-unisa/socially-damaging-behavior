@@ -269,6 +269,7 @@ public class Honest extends Behaviour{
 		return new Double2D(x,y);
 	}
 
+	
 	@Override
 	public Double2D cohesion(Human agent,Bag b, Continuous2D humans)
 	{
