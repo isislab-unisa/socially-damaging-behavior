@@ -9,6 +9,7 @@ public class SociallyDamagingBehavior extends SimState
 {
 	private static final long serialVersionUID = 1;
 	/*SDB*/
+	
 	public int numHumanBeing = 1000;
 	public double width = 300;
 	public double height = 300;
