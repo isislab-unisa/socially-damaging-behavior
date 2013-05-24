@@ -303,6 +303,7 @@ public class Dishonest extends Behaviour{
 		return new Double2D(-x/10,-y/10);
 	}
 
+	
 	@Override
 	public Double2D avoidance(Human agent,Bag b, Continuous2D humans)
 	{
