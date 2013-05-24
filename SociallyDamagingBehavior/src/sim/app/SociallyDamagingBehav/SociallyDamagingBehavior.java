@@ -16,13 +16,13 @@ public class SociallyDamagingBehavior extends SimState
 	public static int EPOCH = 100;
 	public static double cohesion = 1.0;
 	
-	public double getConsistency() {
-		return consistency;
+	public static double getCohesion() {
+		return cohesion;
 	}
 
 
-	public void setConsistency(double consistency) {
-		this.consistency = consistency;
+	public static void setCohesion(double cohesion) {
+		SociallyDamagingBehavior.cohesion = cohesion;
 	}
 	public static int MODEL0_RANDOM_DAMAGING=0;
 	public static int MODEL1_PROPORTIONAL_DAMAGING=1;
