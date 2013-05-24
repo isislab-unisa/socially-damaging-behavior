@@ -9,17 +9,26 @@ public class SociallyDamagingBehavior extends SimState
 {
 	private static final long serialVersionUID = 1;
 	/*SDB*/
-	public int numHumanBeing = 100;
-	public double width = 150;
-	public double height = 150;
+	public int numHumanBeing = 1000;
+	public double width = 300;
+	public double height = 300;
 	public static int EPOCH = 100;
+	public static double cohesion = 1.0;
+	
+	public double getConsistency() {
+		return consistency;
+	}
 
+
+	public void setConsistency(double consistency) {
+		this.consistency = consistency;
+	}
 	public static int MODEL0_RANDOM_DAMAGING=0;
 	public static int MODEL1_PROPORTIONAL_DAMAGING=1;
 	public static int MODEL2_RANDOM_MOVEMENT=2;
 	public static int MODEL3_AGGREGATION_MOVEMENT=3;
 	public static int MODEL4_MEMORY=4;
-	public static int MODEL=MODEL0_RANDOM_DAMAGING;
+	public static int MODEL=MODEL4_MEMORY;
 	public static int MIN_AOI_AGGREGATION_MODEL3=5;
 	public static int MAX_AOI_AGGREGATION_MODEL3=10;
 	public static double RHO_MODEL4_MEMORY = 0.2;
@@ -44,7 +53,7 @@ public class SociallyDamagingBehavior extends SimState
 	/*SDB*/
 
 	public Continuous2D human_being;
-	public double cohesion = 1.0;
+	
 	public double avoidance = 1.0;
 	public double randomness = 1.0;
 	public double consistency = 1.0;
