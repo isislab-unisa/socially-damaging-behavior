@@ -23,8 +23,12 @@ public abstract class RemoteHuman<E> extends OvalPortrayal2D implements Serializ
 		}
 
 	    //getters and setters
-	    public E getPos() { return pos; }
-	    public void setPos(E pos) { this.pos = pos; }
-	    public String getId() {return id;	}
-	    public void setId(String id) {this.id = id;}	
+	    @Override
+		public E getPos() { return pos; }
+	    @Override
+		public void setPos(E pos) { this.pos = pos; }
+	    @Override
+		public String getId() {return id;	}
+	    @Override
+		public void setId(String id) {this.id = id;}	
 }
