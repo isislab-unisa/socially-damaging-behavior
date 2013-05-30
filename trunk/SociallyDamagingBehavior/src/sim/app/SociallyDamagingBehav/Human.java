@@ -5,14 +5,11 @@ import java.awt.Graphics2D;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
-
-import dmason.util.Util;
 import sim.engine.*;
 import sim.field.continuous.*;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.simple.OvalPortrayal2D;
 import sim.util.*;
-
 
 /**
  *  Agent 
@@ -26,13 +23,13 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public Double2D lastd = new Double2D(0,0);
 	public Continuous2D humans;
 	public SociallyDamagingBehavior theHuman;
-	public  Color behav_color;
+	public Color behav_color;
 	public Behaviour behavior;
 	public double dx;
 	public double dy;
 	
 	/*SDB*/
-	public ArrayDeque<Human> agentPast;
+	public ArrayDeque<PastData> agentPast;
 	public double fitness;
 	public double dna;
 	public double ce = 0.0;
@@ -42,7 +39,6 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	
 	//Model 2-3
 	public double neighFitness;
-	public Bag entryNeigh;
 	//Model 2-3
 	
 	//Model 4-5
@@ -65,7 +61,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		
 		theHuman = (SociallyDamagingBehavior)state;
 		humans = theHuman.human_being;
-		agentPast = new ArrayDeque<Human>();
+		agentPast = new ArrayDeque<PastData>();
 		loc = location;
 		fitness=state.random.nextInt(100);
 		this.dna=dna;
@@ -85,9 +81,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 
 	@Override
 	public void step(SimState state)
-	{      
-		SociallyDamagingBehavior sdb = (SociallyDamagingBehavior)state;
-		
+	{      		
 		if (state.schedule.getSteps()==0 || state.schedule.getSteps()%SociallyDamagingBehavior.EPOCH!=0)
 		{
 			final SociallyDamagingBehavior sdbState = (SociallyDamagingBehavior)state;
@@ -97,7 +91,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			behav_color=(dna>5)?Color.GREEN:Color.RED;
 
 			Bag b;
-			entryNeigh = new Bag();
+			Bag entryNeigh = new Bag();
 
 			if(sdbState.getMODEL()==sdbState.MODEL0_RANDOM_DAMAGING)
 			{
@@ -111,10 +105,34 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 					b  = getNeighbors();
 					dx = 0;
 					dy = 0;
+					
+					if(sdbState.allHumans.size()<sdbState.numHumanBeing){
+						double tot = sdbState.totalFitness+this.fitness;
+						sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
+						sdbState.totalFitness = tot;
+					}
+					else
+					{
+						double tot = sdbState.totalFitness+this.fitness;
+						sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
+						sdbState.allHumans.sort(new Comparator<EntryAgent<Double, Human>>() {
+							@Override
+							public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+								if(o1.getFitSum()>o2.getFitSum()) return 1;
+								else if(o1.getFitSum()<o2.getFitSum()) return -1;
+								return 0;
+							}
+						});
+						sdbState.totalFitness = tot;
+						sdbState.lastAllHumans = sdbState.allHumans;
+						sdbState.lastTotalFitness = sdbState.totalFitness;
+						sdbState.allHumans = new Bag();
+						sdbState.totalFitness = 0;
+					}
 
 					if(state.schedule.getSteps()!=0)
 					{
-						if(sdb.allHumans.size()<sdb.numHumanBeing){
+						if(sdbState.allHumans.size()<sdbState.numHumanBeing){
 							double tot = sdbState.totalFitness+this.fitness;
 							sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
 							sdbState.totalFitness = tot;
@@ -240,13 +258,11 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 							if(agentPast.size()>9)
 							{
 								agentPast.removeFirst();
-								Human a = ((Human)(Util.clone(this)));
-								agentPast.add(a);
+								agentPast.add(new PastData(numNeighPunished, numNeighDamager, dna));
 							}
 							else
 							{
-								Human a = ((Human)(Util.clone(this)));
-								agentPast.add(a);
+								agentPast.add(new PastData(numNeighPunished, numNeighDamager, dna));
 							}
 							
 							b = getAggregatedNeighbors();
@@ -270,10 +286,10 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 								valoreMedio2 += (h.dna*h.dna) * (1/(double)b.size());
 							}
 						    
-							for(Human h : agentPast)
+							for(PastData pd : agentPast)
 							{
-								numNeighPunished += h.numNeighPunished;
-								numNeighDamager += h.numNeighDamager;
+								numNeighPunished += pd.numNeighPunished;
+								numNeighDamager += pd.numNeighDamager;
 							}
 							
 							if(numNeighDamager!=0.0)
@@ -324,11 +340,13 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 							}
 						}
 
-			behavior.action(this, sdb, b);
-			behavior.calculateCEI(this, sdb, b);
+			behavior.action(this, sdbState, b, entryNeigh);
 
 			//Social Influence
-			behavior.socialInfluence(this, sdb, b);
+			behavior.calculateCEI(this, sdbState, b);
+			behavior.socialInfluence(this, sdbState, b);
+			
+			dataLogger(sdbState);
 
 			//	loc=move(state, loc);
 
@@ -374,7 +392,36 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		return Math.atan2(lastd.y, lastd.x);
 	}
 
-	
+	public void dataLogger(SociallyDamagingBehavior sdbState) {
+		if((sdbState.numHonest+sdbState.numDishonest)<sdbState.numHumanBeing-1){
+			if(behavior instanceof Honest)
+				sdbState.numHonest++;
+			else
+				sdbState.numDishonest++;
+		}
+		else
+			if((sdbState.numHonest+sdbState.numDishonest)==sdbState.numHumanBeing-1)
+			{
+				if(behavior instanceof Honest)
+					sdbState.numHonest++;
+				else
+					sdbState.numDishonest++;
+				if(sdbState.logging)
+				{
+					sdbState.ps.println(sdbState.schedule.getSteps()+";"+sdbState.numHonest+";"+
+						sdbState.numDishonest+";"+sdbState.numHonestAction+";"+sdbState.numDishonestAction);
+					sdbState.ps.flush();
+				}
+				sdbState.honestAction = sdbState.numHonestAction;
+				sdbState.numHonestAction = 0;
+				sdbState.dishonestAction = sdbState.numDishonestAction;
+				sdbState.numDishonestAction = 0;
+				sdbState.honest = sdbState.numHonest;
+				sdbState.numHonest = 0;
+				sdbState.dishonest = sdbState.numDishonest;
+				sdbState.numDishonest = 0;
+			}
+	}
 	public double getFitness() {return fitness;}
 	public void setFitness(double fitness) {this.fitness = fitness;}
 	public double getDna() {return dna;}

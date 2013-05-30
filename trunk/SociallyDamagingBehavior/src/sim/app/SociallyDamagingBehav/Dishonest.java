@@ -13,7 +13,7 @@ import sim.util.Double2D;
 public class Dishonest extends Behaviour{
 
 	@Override
-	public void action(Human agent,SociallyDamagingBehavior state,Bag neigh) 
+	public void action(Human agent, SociallyDamagingBehavior state, Bag neigh, Bag entryNeigh) 
 	{			
 		if(state.getMODEL()==state.MODEL0_RANDOM_DAMAGING)
 			actionModel_0(agent, state, neigh);
@@ -22,13 +22,13 @@ public class Dishonest extends Behaviour{
 				actionModel_1(agent, state, neigh);
 			else
 				if(state.getMODEL()==state.MODEL2_RANDOM_MOVEMENT)
-					actionModel_2_3(agent, state, neigh);
+					actionModel_2_3(agent, state, neigh, entryNeigh);
 				else
 					if(state.getMODEL()==state.MODEL3_AGGREGATION_MOVEMENT)
-						actionModel_2_3(agent, state, neigh);
+						actionModel_2_3(agent, state, neigh, entryNeigh);
 					else
 						if(state.getMODEL()==state.MODEL4_MEMORY)
-							actionModel_4(agent, state, neigh);
+							actionModel_4(agent, state, neigh, entryNeigh);
 
 		//		int action = sdb.chooseAction(agent.dna);
 		//		if(action == 1)
@@ -56,10 +56,9 @@ public class Dishonest extends Behaviour{
 	public void actionModel_0(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
 		Bag allAgents = sdb.human_being.getAllObjects();
-		int action = sdb.random.nextInt(10)+sdb.random.nextDouble()<agent.dna?sdb.HOSNEST_ACTION:sdb.DISHOSNEST_ACTION; 
-				//sdb.random.nextDouble()*10<agent.dna?1:2; 
-				//sdb.chooseAction(agent.dna);
-		if(action == sdb.HOSNEST_ACTION)
+		int action = sdb.chooseAction(agent.dna); 
+				
+		if(action == sdb.HONEST_ACTION)
 		{
 			agent.honestAction=true;
 			if(sdb.tryHonestAgentAction())
@@ -85,7 +84,7 @@ public class Dishonest extends Behaviour{
 	public void actionModel_1(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
 		int action = sdb.chooseAction(agent.dna);
-		if(action == 1)
+		if(action == sdb.HONEST_ACTION)
 		{
 			agent.honestAction=true;
 			if(sdb.tryHonestAgentAction())
@@ -127,10 +126,10 @@ public class Dishonest extends Behaviour{
 	 * This is the action of agent with damaging on a proportional fitness
 	 * with random movement and sigma
 	 */
-	public void actionModel_2_3(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
+	public void actionModel_2_3(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
 
 		int action = sdb.chooseAction(agent.dna);
-		if(action == 1)
+		if(action == sdb.HONEST_ACTION)
 		{
 			agent.honestAction=true;
 			if(sdb.tryHonestAgentAction())
@@ -152,10 +151,10 @@ public class Dishonest extends Behaviour{
 					}
 
 					Human damaged;
-					for (int i = 1; i < agent.entryNeigh.size(); i++) {
-						if(((EntryAgent<Double,Human>)(agent.entryNeigh.get(i))).getFitSum()>var)
+					for (int i = 1; i < entryNeigh.size(); i++) {
+						if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
 						{
-							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeigh.get(i-1);
+							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
 							damaged = ea.getH();
 							agent.fitness=+percF;
 
@@ -172,7 +171,7 @@ public class Dishonest extends Behaviour{
 	 * This is the action of agent with damaging on a proportional fitness
 	 * with random movement and sigma
 	 */
-	public void actionModel_4(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
+	public void actionModel_4(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
 
 		double dna;
 
@@ -185,7 +184,7 @@ public class Dishonest extends Behaviour{
 		agent.isActionDishonest = false;
 		agent.isPunished = false;
 
-		if(action == 1)
+		if(action == sdb.HONEST_ACTION)
 		{
 			agent.honestAction=true;
 			if(sdb.tryHonestAgentAction())
@@ -210,10 +209,10 @@ public class Dishonest extends Behaviour{
 
 					Human damaged;
 
-					for (int i = 1; i < agent.entryNeigh.size(); i++) {
-						if(((EntryAgent<Double,Human>)(agent.entryNeigh.get(i))).getFitSum()>var)
+					for (int i = 1; i < entryNeigh.size(); i++) {
+						if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
 						{
-							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeigh.get(i-1);
+							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
 							damaged = ea.getH();
 
 							agent.fitness=+percF;
@@ -303,7 +302,6 @@ public class Dishonest extends Behaviour{
 		return new Double2D(-x/10,-y/10);
 	}
 
-	
 	@Override
 	public Double2D avoidance(Human agent,Bag b, Continuous2D humans)
 	{

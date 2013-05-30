@@ -8,7 +8,6 @@ public class EntryAgent <D, H>{
 	public D getFitSum() {
 		return fitSum;
 	}
-	
 
 	public void setFitSum(D fitSum) {
 		this.fitSum = fitSum;

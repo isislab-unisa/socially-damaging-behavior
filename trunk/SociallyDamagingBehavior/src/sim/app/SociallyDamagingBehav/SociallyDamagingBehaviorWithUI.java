@@ -35,7 +35,6 @@ public class SociallyDamagingBehaviorWithUI extends GUIState
         super(new SociallyDamagingBehavior(System.currentTimeMillis()));
         }
     
-    
     public SociallyDamagingBehaviorWithUI(SimState state) 
         {
         super(state);

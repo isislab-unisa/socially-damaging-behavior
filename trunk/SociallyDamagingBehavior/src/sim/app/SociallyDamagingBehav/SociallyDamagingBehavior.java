@@ -1,5 +1,8 @@
-
 package sim.app.SociallyDamagingBehav;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Comparator;
 import sim.engine.*;
 import sim.util.*;
@@ -8,35 +11,32 @@ import sim.field.continuous.*;
 public class SociallyDamagingBehavior extends SimState
 {
 	private static final long serialVersionUID = 1;
+	
+	//logger
+	public boolean logging = false;
+	public FileOutputStream file;
+	public PrintStream ps;
+	
 	/*SDB*/
-	
-	public int numHumanBeing = 1000;
-	public double width = 300;
-	public double height = 300;
+	public static int numHumanBeing = 1000;
+	public static double width = 200;
+	public static double height = 200;
 	public static int EPOCH = 100;
-	public static double cohesion = 1.0;
-	
-	public static double getCohesion() {
-		return cohesion;
-	}
 
-
-	public static void setCohesion(double cohesion) {
-		SociallyDamagingBehavior.cohesion = cohesion;
-	}
 	public static int MODEL0_RANDOM_DAMAGING=0;
 	public static int MODEL1_PROPORTIONAL_DAMAGING=1;
 	public static int MODEL2_RANDOM_MOVEMENT=2;
 	public static int MODEL3_AGGREGATION_MOVEMENT=3;
 	public static int MODEL4_MEMORY=4;
-	public static int MODEL=MODEL4_MEMORY;
-	public static int MIN_AOI_AGGREGATION_MODEL3=5;
-	public static int MAX_AOI_AGGREGATION_MODEL3=10;
+	public static int MODEL = MODEL4_MEMORY;
+	public static double neighborhood = 10;
+	public static double MIN_AOI_AGGREGATION_MODEL3 = 5;
+	public static double MAX_AOI_AGGREGATION_MODEL3 = 10;
 	public static double RHO_MODEL4_MEMORY = 0.2;
 
 	public static double DAMAGING_PAYOFF_PROB = 1.0;
-	public static double DAMAGING_PAYOFF = 2;//1.5;
-	public static double SOCIAL_INFLUENCE = 0.0;//0.010;
+	public static double DAMAGING_PAYOFF = 1.5;
+	public static double SOCIAL_INFLUENCE = 0.010;
 	public static int PERCENTAGE_PAYOFF_FITNESS=10;
 
 	public static double PUNISHIMENT_PROB = 1.0;
@@ -49,39 +49,36 @@ public class SociallyDamagingBehavior extends SimState
 	public static double HONEST_PROB = 1.0;
 	public static int PERCENT_HONEST = 50;
 	
-	public static final int HOSNEST_ACTION=1;
+	public static final int HONEST_ACTION=1;
 	public static final int DISHOSNEST_ACTION=2;
 	/*SDB*/
 
 	public Continuous2D human_being;
-	
+	public double cohesion = 1.0;
 	public double avoidance = 1.0;
 	public double randomness = 1.0;
 	public double consistency = 1.0;
 	public double momentum = 1.0;
-	public double neighborhood = 10;
 	public double jump = 0.7;  // how far do we move in a timestep?
 	public double totalFitness = 0;
 	public double lastTotalFitness = 0;
 	public Bag allHumans;
 	public Bag lastAllHumans;
-	public int numHonest=0;
-	public int numDishonest=0;
-	public int numHonestAction=0;
-	public int numDishonestAction=0;
-
-	public int getNumHonestAction() {
-		return numHonestAction;
-	}
-
+	public int honestAction = 0;
+	public int numHonestAction = 0;
+	public int numDishonestAction = 0;
+	public int dishonestAction = 0;
+	public int honest = 0;
+	public int numHonest = 0;
+	public int dishonest = 0;
+	public int numDishonest = 0;
 	
-	public int getNumDishonestAction() {
-		return numDishonestAction;
-	}
 
-	
 	/** Creates a SDB simulation with the given random number seed. */
-	public SociallyDamagingBehavior(long seed){super(0);}
+	public SociallyDamagingBehavior(long seed)
+	{
+		super(0);
+	}
 
 	@Override
 	public void start()
@@ -97,21 +94,26 @@ public class SociallyDamagingBehavior extends SimState
 		// would be optimal.  Go figure.
 		human_being = new Continuous2D(neighborhood/1.5,width,height);
 
+		//file logging
+		if(logging)
+			try {
+				file = new FileOutputStream("Model="+MODEL+"_NumAgent="+numHumanBeing+"_Width="+width+"_Height="+height+".txt");
+				ps = new PrintStream(file);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		// make a bunch of humans and schedule 'em.  
 
-		int hon = (numHumanBeing*PERCENT_HONEST)/100;
-		int disHon = numHumanBeing - hon;
-
-	    numHonest=hon;
-	    numDishonest=disHon;
-	    numDishonestAction=0;
-	    numHonestAction=0;
+	    honest = (numHumanBeing*PERCENT_HONEST)/100;
+	    dishonest = numHumanBeing - honest;
 		
 		//System.out.println("Honest="+hon+"     DisHon="+disHon);
 		allHumans = new Bag();
 
 		//Create Honest Agent
-		for (int x=0;x<hon;x++) 
+		for (int x=0;x<honest;x++) 
 		{
 			Double2D location = new Double2D(random.nextDouble()*width, random.nextDouble() * height);
 			/*SDB*/
@@ -130,7 +132,7 @@ public class SociallyDamagingBehavior extends SimState
 		}
 
 		//Create Dishonest Agent
-		for(int x=0;x<disHon;x++)
+		for(int x=0;x<dishonest;x++)
 		{
 			Double2D location = new Double2D(random.nextDouble()*width, random.nextDouble() * height);
 			/*SDB*/
@@ -145,7 +147,6 @@ public class SociallyDamagingBehavior extends SimState
 
 			allHumans.add(new EntryAgent<Double, Human>(0.0, dhAgent));//////Model 2-3
 
-			//schedule.scheduleRepeating(dhAgent);
 			schedule.scheduleOnce(dhAgent);
 		}
 
@@ -170,11 +171,14 @@ public class SociallyDamagingBehavior extends SimState
 		allHumans = new Bag();
 		lastTotalFitness = totalFitness;
 		totalFitness = 0;
-		//////End Model 2-3
+
+//		//////End Model 2-3
+//		//test
+//		long start = System.currentTimeMillis();
+//		ps.println("Start="+(start/1000));
+//		ps.flush();
+		
 	}
-
-
-	
 
 	/**
 	 * Choose kind of action. if random value < dna -->honest action(1), 
@@ -184,9 +188,8 @@ public class SociallyDamagingBehavior extends SimState
 	 */
 	public int chooseAction(double dna)
 	{
-		return this.random.nextInt(10)+this.random.nextDouble()<dna?this.HOSNEST_ACTION:this.DISHOSNEST_ACTION;
+		return this.random.nextInt(10)+this.random.nextDouble()<dna?this.HONEST_ACTION:this.DISHOSNEST_ACTION;
 	}
-
 
 	/**
 	 * 
@@ -195,30 +198,19 @@ public class SociallyDamagingBehavior extends SimState
 	public boolean tryHonestAgentAction()
 	{
 		boolean isHonest=((this.random.nextDouble()<HONEST_PROB));
-		if(isHonest){
-			if((this.numHonestAction+this.numDishonestAction)==this.numHumanBeing){
-				this.numHonestAction=1;
-				this.numDishonestAction=0;
-			}
-			else
-				this.numHonestAction++;
-		}
+		if(isHonest)
+			this.numHonestAction++;
 		return isHonest;
 	}
+	
 	/**
 	 *  try dishonest action 
 	 */
 	public boolean tryDisHonestAgentAction()
 	{		
 		boolean isDishonest=((this.random.nextDouble()<HONEST_PROB));
-		if(isDishonest){
-			if((this.numHonestAction+this.numDishonestAction)==this.numHumanBeing){
-				this.numDishonestAction=1;
-				this.numHonestAction=0;
-			}
-			else
-				this.numDishonestAction++;
-		}
+		if(isDishonest)
+			this.numDishonestAction++;
 		return isDishonest;
 	}
 
@@ -259,8 +251,6 @@ public class SociallyDamagingBehavior extends SimState
 				else if(H_neigh<DH_neigh) prob_pun=(SociallyDamagingBehavior.PUNISHIMENT_PROB-p_perc_dh);
 
 			}
-
-
 		}	
 
 
@@ -282,14 +272,24 @@ public class SociallyDamagingBehavior extends SimState
 		}
 		else
 			return false;
-
 	}
 
 	/*SDB*/
 	public static void main(String[] args)
 	{
-		doLoop(SociallyDamagingBehavior.class, args);
-		System.exit(0);
+//		if(args.length!=5)
+//			System.out.println("java -jar nomefile.jar <Model 0-4> <width> <height> <numAgents> <AOI>");
+//		else
+//		{
+//			MODEL = Integer.parseInt(args[0]);
+//			width = Double.parseDouble(args[1]);
+//			height = Double.parseDouble(args[2]);
+//			numHumanBeing = Integer.parseInt(args[3]);
+//			neighborhood = Double.parseDouble(args[4]);
+//			MAX_AOI_AGGREGATION_MODEL3 = Double.parseDouble(args[4]);
+			doLoop(SociallyDamagingBehavior.class, args);
+			System.exit(0);
+//		}
 	}
 
 	public int getNumHumanBeing() {return numHumanBeing;}
@@ -298,20 +298,25 @@ public class SociallyDamagingBehavior extends SimState
 	public void setWidth(double val) { if (val > 0) width = val; }
 	public double getHeight() { return height; }
 	public void setHeight(double val) { if (val > 0) height = val; }
-	public int getNumHonest() {
-		return numHonest;
-	}
-
-	public int getNumDishonest() {
-		return numDishonest;
-	}
 
 	public double getNeighborhood() { return neighborhood; }
-	public static int getMIN_AOI_AGGREGATION_MODEL3() {return MIN_AOI_AGGREGATION_MODEL3;}
-	public static void setMIN_AOI_AGGREGATION_MODEL3(int mIN_AOI_AGGREGATION_MODEL3) {MIN_AOI_AGGREGATION_MODEL3 = mIN_AOI_AGGREGATION_MODEL3;}
-	public static int getMAX_AOI_AGGREGATION_MODEL3() {return MAX_AOI_AGGREGATION_MODEL3;}
-	public static void setMAX_AOI_AGGREGATION_MODEL3(int mAX_AOI_AGGREGATION_MODEL3) {MAX_AOI_AGGREGATION_MODEL3 = mAX_AOI_AGGREGATION_MODEL3;}
 	public void setNeighborhood(double val) { if (val > 0) neighborhood = val; }
+	public static double getMIN_AOI_AGGREGATION_MODEL3() {
+		return MIN_AOI_AGGREGATION_MODEL3;
+	}
+	public static void setMIN_AOI_AGGREGATION_MODEL3(double mIN_AOI_AGGREGATION_MODEL3) {
+		if((mIN_AOI_AGGREGATION_MODEL3 > 0) && 
+				(mIN_AOI_AGGREGATION_MODEL3<=MAX_AOI_AGGREGATION_MODEL3))
+			MIN_AOI_AGGREGATION_MODEL3 = mIN_AOI_AGGREGATION_MODEL3;
+	}
+	public static double getMAX_AOI_AGGREGATION_MODEL3() {
+		return MAX_AOI_AGGREGATION_MODEL3;
+	}
+	public static void setMAX_AOI_AGGREGATION_MODEL3(double mAX_AOI_AGGREGATION_MODEL3) {
+		if((mAX_AOI_AGGREGATION_MODEL3 >= MIN_AOI_AGGREGATION_MODEL3) &&
+				(mAX_AOI_AGGREGATION_MODEL3 <= neighborhood))
+			MAX_AOI_AGGREGATION_MODEL3 = mAX_AOI_AGGREGATION_MODEL3;
+	}
 	public static double getDAMAGING_PAYOFF_PROB() {return DAMAGING_PAYOFF_PROB;}
 	public static void setDAMAGING_PAYOFF_PROB(double dAMAGING_PAYOFF_PROB) {DAMAGING_PAYOFF_PROB = dAMAGING_PAYOFF_PROB;}
 	public static double getDAMAGING_PAYOFF() {return DAMAGING_PAYOFF;}
@@ -333,5 +338,13 @@ public class SociallyDamagingBehavior extends SimState
 	public int getPUNISHIMENT_SEVERITY() {return PUNISHIMENT_SEVERITY;}
 	public void setPUNISHIMENT_SEVERITY(int pUNISHIMENT_SEVERITY) {PUNISHIMENT_SEVERITY = pUNISHIMENT_SEVERITY;}
 	public static int getPERCENTAGE_PAYOFF_FITNESS() {return PERCENTAGE_PAYOFF_FITNESS;}
-	public static void setPERCENTAGE_PAYOFF_FITNESS(int pERCENTAGE_PAYOFF_FITNESS) {PERCENTAGE_PAYOFF_FITNESS = pERCENTAGE_PAYOFF_FITNESS;}	
+	public static void setPERCENTAGE_PAYOFF_FITNESS(int pERCENTAGE_PAYOFF_FITNESS) {PERCENTAGE_PAYOFF_FITNESS = pERCENTAGE_PAYOFF_FITNESS;}
+	public double getCohesion() {return cohesion;}
+	public void setCohesion(double cohesion) {this.cohesion = cohesion;}
+	public int getHonest() {return honest;}
+	public int getDishonest() {return dishonest;}
+	public int getHonestAction() {return honestAction;}
+	public int getDishonestAction() {return dishonestAction;}
+	public boolean isLogging() {return logging;}
+	public void setLogging(boolean logging) {this.logging = logging;}
 }
