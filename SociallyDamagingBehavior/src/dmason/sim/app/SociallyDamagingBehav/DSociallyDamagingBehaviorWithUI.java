@@ -1,4 +1,5 @@
 package dmason.sim.app.SociallyDamagingBehav;
+
 import sim.engine.*;
 import sim.display.*;
 import sim.portrayal.continuous.*;
@@ -16,11 +17,13 @@ public class DSociallyDamagingBehaviorWithUI extends GUIState
     
     public static String topicPrefix = "";
 
-    public Object getSimulationInspectedObject() { return state; }  // non-volatile
+    @Override
+	public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
     ContinuousPortrayal2D DSDBPortrayal = new ContinuousPortrayal2D();
     ContinuousPortrayal2D trailsPortrayal = new ContinuousPortrayal2D();
     
+ 
     public DSociallyDamagingBehaviorWithUI(GeneralParam args) 
     { 
     	super(new DSociallyDamagingBehavior(args));
@@ -30,13 +33,15 @@ public class DSociallyDamagingBehaviorWithUI extends GUIState
   
     public static String getName() { return "Peer: <"+name+">"; }
 
-    public void start()
+    @Override
+	public void start()
     {
         super.start();
         setupPortrayals();
     }
 
-    public void load(SimState state)
+    @Override
+	public void load(SimState state)
     {
         super.load(state);
         setupPortrayals();
@@ -94,7 +99,8 @@ public class DSociallyDamagingBehaviorWithUI extends GUIState
         display.repaint();
     }
 
-    public void init(Controller c)
+    @Override
+	public void init(Controller c)
     {
         super.init(c);
 
@@ -112,7 +118,8 @@ public class DSociallyDamagingBehaviorWithUI extends GUIState
         display.attach( DSDBPortrayal, "Behold the Human!" );
     }
         
-    public void quit()
+    @Override
+	public void quit()
     {
         super.quit();
         
@@ -120,4 +127,5 @@ public class DSociallyDamagingBehaviorWithUI extends GUIState
         displayFrame = null;
         display = null;
     }
+    public static Class<?> getSimClass(){return DSociallyDamagingBehavior.class;}
 }

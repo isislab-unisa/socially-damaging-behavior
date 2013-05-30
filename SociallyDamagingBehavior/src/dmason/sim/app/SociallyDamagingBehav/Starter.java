@@ -1,7 +1,7 @@
 package dmason.sim.app.SociallyDamagingBehav;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import sim.display.Console;
 import dmason.batch.data.GeneralParam;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
@@ -25,7 +25,7 @@ public class Starter {
 			ArrayList<Console> dsdb=new ArrayList<Console>();
 			for (int j = 0; j < columns; j++) 
 			{		
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE, 1,columns,NUM_AGENTS, MODE); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE, 1,columns,NUM_AGENTS, MODE, new HashMap<String, Object>()); 
 				genParam.setI(0);
 				genParam.setJ(j);
 				genParam.setIp("127.0.0.1");
@@ -46,7 +46,7 @@ public class Starter {
 			{
 				for (int j = 0; j < columns; j++) 
 				{
-					GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE); 
+					GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE, new HashMap<String, Object>()); 
 					genParam.setI(i);
 					genParam.setJ(j);
 					genParam.setIp("127.0.0.1");
