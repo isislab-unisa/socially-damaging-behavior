@@ -6,7 +6,6 @@ import sim.engine.Steppable;
 import sim.util.Bag;
 import sim.util.Double2D;
 
-
 /**
  * 
  * Genetic algorithm
@@ -15,7 +14,7 @@ import sim.util.Double2D;
 public class NewGenAgent implements Steppable{
 
 	private static final long serialVersionUID = 1L;
-
+	
 	@Override
 	public void step(SimState state) {
 		
@@ -103,6 +102,19 @@ public class NewGenAgent implements Steppable{
 				sdbState.human_being.setObjectLocation(h, h.loc);
 				sdbState.schedule.scheduleOnce(h);
 			}
+			
+//			if(sdbState.logging)
+//			{
+//				sdbState.ps.println(sdbState.schedule.getSteps()+";"+sdbState.numHonest+";"+
+//					sdbState.numDishonest+";"+sdbState.numHonestAction+";"+sdbState.numDishonestAction);
+//				sdbState.ps.flush();
+//			}
+			sdbState.numHonestAction = 0;
+			sdbState.numDishonestAction = 0;
+			sdbState.honest = sdbState.numHonest;
+			sdbState.dishonest = sdbState.numDishonest;
+			sdbState.numHonest = 0;
+			sdbState.numDishonest = 0;
 		}
 	}
 
