@@ -64,6 +64,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		agentPast = new ArrayDeque<PastData>();
 		loc = location;
 		fitness=state.random.nextInt(100);
+
 		this.dna=dna;
 		behavior=(dna>5)?new Honest():new Dishonest();
 		behav_color=(dna>5)?Color.GREEN:Color.RED;
@@ -71,8 +72,8 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		isPunished = false;
 		isActionDishonest = false;
 		
-		if((theHuman.getMODEL()==theHuman.MODEL3_AGGREGATION_MOVEMENT) || 
-				(theHuman.getMODEL()==theHuman.MODEL4_MEMORY))
+		if((theHuman.getMODEL()==theHuman.MODEL4_AGGREGATION_MOVEMENT) || 
+				(theHuman.getMODEL()==theHuman.MODEL5_MEMORY))
 		{
 			min_aoi_aggregation = theHuman.MIN_AOI_AGGREGATION_MODEL3;
 			max_aoi_aggregation = theHuman.MAX_AOI_AGGREGATION_MODEL3;
@@ -100,7 +101,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 				dy = 0;
 			}
 			else
-				if(sdbState.getMODEL()==sdbState.MODEL1_PROPORTIONAL_DAMAGING)
+				if(sdbState.getMODEL()==sdbState.MODEL1_PROPORTIONAL_DAMAGING_ALLAGENTS)
 				{
 					b  = getNeighbors();
 					dx = 0;
@@ -158,23 +159,12 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 					}
 				}
 				else
-					if(sdbState.getMODEL()==sdbState.MODEL2_RANDOM_MOVEMENT)
+					if(sdbState.getMODEL()==sdbState.MODEL2_PROPORTIONAL_DAMAGING_NEIGH)
 					{
-						b = getNeighbors();
-						Double2D rand = behavior.randomness(sdbState);
-						Double2D mome = momentum();
-
-						dx = rand.x + sdbState.momentum * mome.x;
-						dy = rand.y + sdbState.momentum * mome.y;
-
-						// renormalize to the given step size
-						double dis = Math.sqrt(dx*dx+dy*dy);
-						if (dis>0)
-						{
-							dx = dx / dis * sdbState.jump;
-							dy = dy / dis * sdbState.jump;
-						}
-
+						b  = getNeighbors();
+						dx = 0;
+						dy = 0;
+						
 						b.sort(new Comparator<Human>() {
 							@Override
 							public int compare(Human o1, Human o2) {
@@ -183,7 +173,9 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 								return 0;
 							}
 						});
-
+						
+						System.out.println("fit "+fitness);
+						
 						neighFitness = 0;
 
 						for (Object o : b) {
@@ -193,33 +185,23 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 						}
 					}
 					else
-						if(sdbState.getMODEL()==sdbState.MODEL3_AGGREGATION_MOVEMENT)
+						if(sdbState.getMODEL()==sdbState.MODEL3_RANDOM_MOVEMENT)
 						{
-							b = getAggregatedNeighbors();
-							
-							double valoreMedio = 0;
-							double valoreMedio2 = 0;
-							double varianza = 0;
-
-							for(Object o : b)
+							b = getNeighbors();
+							Double2D rand = behavior.randomness(sdbState);
+							Double2D mome = momentum();
+	
+							dx = rand.x + sdbState.momentum * mome.x;
+							dy = rand.y + sdbState.momentum * mome.y;
+	
+							// renormalize to the given step size
+							double dis = Math.sqrt(dx*dx+dy*dy);
+							if (dis>0)
 							{
-								Human h = (Human)o;
-								
-								valoreMedio += h.dna * (1/(double)b.size());
-							
-								valoreMedio2 += (h.dna*h.dna) * (1/(double)b.size());
+								dx = dx / dis * sdbState.jump;
+								dy = dy / dis * sdbState.jump;
 							}
-						    
-							
-							varianza = (valoreMedio2) - ((valoreMedio)*(valoreMedio));
-							double deviazione=Math.sqrt(varianza);
-							
-							if((deviazione > sigma2) && (max_aoi_aggregation < theHuman.neighborhood))
-								max_aoi_aggregation += 1.0;
-							else
-								if((deviazione < sigma1) && (max_aoi_aggregation>min_aoi_aggregation))
-									max_aoi_aggregation -= 1.0;									
-							
+	
 							b.sort(new Comparator<Human>() {
 								@Override
 								public int compare(Human o1, Human o2) {
@@ -228,117 +210,162 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 									return 0;
 								}
 							});
-
+	
 							neighFitness = 0;
-
+	
 							for (Object o : b) {
 								Human h = (Human)o;
 								neighFitness += h.fitness;
 								entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
-							}
-							
-							Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
-							Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
-							Double2D cons = behavior.consistency(this,b,sdbState.human_being);
-							Double2D mome = momentum();
-							
-							dx = sdbState.cohesion * cohe.x + sdbState.avoidance * avoid.x + sdbState.consistency* cons.x + sdbState.momentum * mome.x;
-							dy = sdbState.cohesion * cohe.y + sdbState.avoidance * avoid.y + sdbState.consistency* cons.y + sdbState.momentum * mome.y;
-							
-							// renormalize to the given step size
-							double dis = Math.sqrt(dx*dx+dy*dy);
-							if (dis>0)
-							{
-								dx = dx / dis * sdbState.jump;
-								dy = dy / dis * sdbState.jump;
 							}
 						}
 						else
-						{
-							if(agentPast.size()>9)
+							if(sdbState.getMODEL()==sdbState.MODEL4_AGGREGATION_MOVEMENT)
 							{
-								agentPast.removeFirst();
-								agentPast.add(new PastData(numNeighPunished, numNeighDamager, dna));
-							}
-							else
-							{
-								agentPast.add(new PastData(numNeighPunished, numNeighDamager, dna));
-							}
-							
-							b = getAggregatedNeighbors();
-							numNeighPunished = 0;
-							numNeighDamager = 0;
-							double valoreMedio = 0;
-							double valoreMedio2 = 0;
-							double varianza = 0;
-
-							for(Object o : b)
-							{
-								Human h = (Human)o;
+								b = getAggregatedNeighbors();
 								
-								if(h.isPunished)
-									numNeighPunished++;
+								double valoreMedio = 0;
+								double valoreMedio2 = 0;
+								double varianza = 0;
+	
+								for(Object o : b)
+								{
+									Human h = (Human)o;
+									
+									valoreMedio += h.dna * (1/(double)b.size());
 								
-								if(h.isActionDishonest)
-									numNeighDamager++;
-								
-								valoreMedio += h.dna * (1/(double)b.size());
-								valoreMedio2 += (h.dna*h.dna) * (1/(double)b.size());
-							}
-						    
-							for(PastData pd : agentPast)
-							{
-								numNeighPunished += pd.numNeighPunished;
-								numNeighDamager += pd.numNeighDamager;
-							}
-							
-							if(numNeighDamager!=0.0)
-								punprob = (numNeighPunished/numNeighDamager);
-							else
-								punprob = 0.0;
-
-							varianza = (valoreMedio2) - ((valoreMedio)*(valoreMedio));
-							double deviazione=Math.sqrt(varianza);
-							
-							if((deviazione > sigma2) && (max_aoi_aggregation < theHuman.neighborhood))
-								max_aoi_aggregation += 1.0;
-							else
-								if((deviazione < sigma1) && (max_aoi_aggregation>min_aoi_aggregation))
-									max_aoi_aggregation -= 1.0;									
-							
-							b.sort(new Comparator<Human>() {
-								@Override
-								public int compare(Human o1, Human o2) {
-									if(o1.fitness>o2.fitness) return 1;
-									else if(o1.fitness<o2.fitness) return -1;
-									return 0;
+									valoreMedio2 += (h.dna*h.dna) * (1/(double)b.size());
 								}
-							});
-
-							neighFitness = 0;
-
-							for (Object o : b) {
-								Human h = (Human)o;
-								neighFitness += h.fitness;
-								entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+							    
+								
+								varianza = (valoreMedio2) - ((valoreMedio)*(valoreMedio));
+								double deviazione=Math.sqrt(varianza);
+								
+								if((deviazione > sigma2) && (max_aoi_aggregation < theHuman.neighborhood))
+									max_aoi_aggregation += 1.0;
+								else
+									if((deviazione < sigma1) && (max_aoi_aggregation>min_aoi_aggregation))
+										max_aoi_aggregation -= 1.0;									
+								
+								b.sort(new Comparator<Human>() {
+									@Override
+									public int compare(Human o1, Human o2) {
+										if(o1.fitness>o2.fitness) return 1;
+										else if(o1.fitness<o2.fitness) return -1;
+										return 0;
+									}
+								});
+	
+								neighFitness = 0;
+	
+								for (Object o : b) {
+									Human h = (Human)o;
+									neighFitness += h.fitness;
+									entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+								}
+								
+								Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
+								Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
+								Double2D cons = behavior.consistency(this,b,sdbState.human_being);
+								Double2D mome = momentum();
+								
+								dx = sdbState.cohesion * cohe.x + sdbState.avoidance * avoid.x + sdbState.consistency* cons.x + sdbState.momentum * mome.x;
+								dy = sdbState.cohesion * cohe.y + sdbState.avoidance * avoid.y + sdbState.consistency* cons.y + sdbState.momentum * mome.y;
+								
+								// renormalize to the given step size
+								double dis = Math.sqrt(dx*dx+dy*dy);
+								if (dis>0)
+								{
+									dx = dx / dis * sdbState.jump;
+									dy = dy / dis * sdbState.jump;
+								}
 							}
-							
-							Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
-							Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
-							Double2D cons = behavior.consistency(this,b,sdbState.human_being);
-							Double2D mome = momentum();
-							
-							dx = sdbState.cohesion * cohe.x + sdbState.avoidance * avoid.x + sdbState.consistency* cons.x + sdbState.momentum * mome.x;
-							dy = sdbState.cohesion * cohe.y + sdbState.avoidance * avoid.y + sdbState.consistency* cons.y + sdbState.momentum * mome.y;
-							
-							// renormalize to the given step size
-							double dis = Math.sqrt(dx*dx+dy*dy);
-							if (dis>0)
+							else
 							{
-								dx = dx / dis * sdbState.jump;
-								dy = dy / dis * sdbState.jump;
+								if(agentPast.size()>9)
+								{
+									agentPast.removeFirst();
+									agentPast.add(new PastData(numNeighPunished, numNeighDamager, dna));
+								}
+								else
+								{
+									agentPast.add(new PastData(numNeighPunished, numNeighDamager, dna));
+								}
+								
+								b = getAggregatedNeighbors();
+								numNeighPunished = 0;
+								numNeighDamager = 0;
+								double valoreMedio = 0;
+								double valoreMedio2 = 0;
+								double varianza = 0;
+	
+								for(Object o : b)
+								{
+									Human h = (Human)o;
+									
+									if(h.isPunished)
+										numNeighPunished++;
+									
+									if(h.isActionDishonest)
+										numNeighDamager++;
+									
+									valoreMedio += h.dna * (1/(double)b.size());
+									valoreMedio2 += (h.dna*h.dna) * (1/(double)b.size());
+								}
+							    
+								for(PastData pd : agentPast)
+								{
+									numNeighPunished += pd.numNeighPunished;
+									numNeighDamager += pd.numNeighDamager;
+								}
+								
+								if(numNeighDamager!=0.0)
+									punprob = (numNeighPunished/numNeighDamager);
+								else
+									punprob = 0.0;
+	
+								varianza = (valoreMedio2) - ((valoreMedio)*(valoreMedio));
+								double deviazione=Math.sqrt(varianza);
+								
+								if((deviazione > sigma2) && (max_aoi_aggregation < theHuman.neighborhood))
+									max_aoi_aggregation += 1.0;
+								else
+									if((deviazione < sigma1) && (max_aoi_aggregation>min_aoi_aggregation))
+										max_aoi_aggregation -= 1.0;									
+								
+								b.sort(new Comparator<Human>() {
+									@Override
+									public int compare(Human o1, Human o2) {
+										if(o1.fitness>o2.fitness) return 1;
+										else if(o1.fitness<o2.fitness) return -1;
+										return 0;
+									}
+								});
+	
+								neighFitness = 0;
+	
+								for (Object o : b) {
+									Human h = (Human)o;
+									neighFitness += h.fitness;
+									entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+								}
+								
+								Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
+								Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
+								Double2D cons = behavior.consistency(this,b,sdbState.human_being);
+								Double2D mome = momentum();
+								
+								dx = sdbState.cohesion * cohe.x + sdbState.avoidance * avoid.x + sdbState.consistency* cons.x + sdbState.momentum * mome.x;
+								dy = sdbState.cohesion * cohe.y + sdbState.avoidance * avoid.y + sdbState.consistency* cons.y + sdbState.momentum * mome.y;
+								
+								// renormalize to the given step size
+								double dis = Math.sqrt(dx*dx+dy*dy);
+								if (dis>0)
+								{
+									dx = dx / dis * sdbState.jump;
+									dy = dy / dis * sdbState.jump;
+								}
 							}
-						}
 
 			behavior.action(this, sdbState, b, entryNeigh);
 
@@ -347,9 +374,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			behavior.socialInfluence(this, sdbState, b);
 			
 			dataLogger(sdbState);
-
-			//	loc=move(state, loc);
-
+			
 			lastd = new Double2D(dx,dy);
 			loc = new Double2D(sdbState.human_being.stx(loc.x + dx), sdbState.human_being.sty(loc.y + dy));
 			sdbState.human_being.setObjectLocation(this, loc);
@@ -395,9 +420,15 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	public void dataLogger(SociallyDamagingBehavior sdbState) {
 		if((sdbState.numHonest+sdbState.numDishonest)<sdbState.numHumanBeing-1){
 			if(behavior instanceof Honest)
+			{
 				sdbState.numHonest++;
+				sdbState.total_honest_fitness += this.fitness;
+			}
 			else
+			{
 				sdbState.numDishonest++;
+				sdbState.total_dishonest_fitness += this.fitness;
+			}
 		}
 		else
 			if((sdbState.numHonest+sdbState.numDishonest)==sdbState.numHumanBeing-1)
@@ -409,10 +440,13 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 				if(sdbState.logging)
 				{
 					sdbState.ps.println(sdbState.schedule.getSteps()+";"+sdbState.numHonest+";"+
-						sdbState.numDishonest+";"+sdbState.numHonestAction+";"+sdbState.numDishonestAction);
+						sdbState.numDishonest+";"+sdbState.numHonestAction+";"+sdbState.numDishonestAction+
+						";"+sdbState.total_honest_fitness+";"+sdbState.total_dishonest_fitness);
 					sdbState.ps.flush();
 				}
 				sdbState.honestAction = sdbState.numHonestAction;
+				sdbState.total_honest_fitness = 0;
+				sdbState.total_dishonest_fitness = 0;
 				sdbState.numHonestAction = 0;
 				sdbState.dishonestAction = sdbState.numDishonestAction;
 				sdbState.numDishonestAction = 0;
