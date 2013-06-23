@@ -18,36 +18,20 @@ public class Dishonest extends Behaviour{
 		if(state.getMODEL()==state.MODEL0_RANDOM_DAMAGING)
 			actionModel_0(agent, state, neigh);
 		else
-			if(state.getMODEL()==state.MODEL1_PROPORTIONAL_DAMAGING)
+			if(state.getMODEL()==state.MODEL1_PROPORTIONAL_DAMAGING_ALLAGENTS)
 				actionModel_1(agent, state, neigh);
 			else
-				if(state.getMODEL()==state.MODEL2_RANDOM_MOVEMENT)
-					actionModel_2_3(agent, state, neigh, entryNeigh);
+				if(state.getMODEL()==state.MODEL2_PROPORTIONAL_DAMAGING_NEIGH)
+					actionModel_2(agent, state, neigh, entryNeigh);
 				else
-					if(state.getMODEL()==state.MODEL3_AGGREGATION_MOVEMENT)
-						actionModel_2_3(agent, state, neigh, entryNeigh);
+					if(state.getMODEL()==state.MODEL3_RANDOM_MOVEMENT)
+						actionModel_3_4(agent, state, neigh, entryNeigh);
 					else
-						if(state.getMODEL()==state.MODEL4_MEMORY)
-							actionModel_4(agent, state, neigh, entryNeigh);
-
-		//		int action = sdb.chooseAction(agent.dna);
-		//		if(action == 1)
-		//		{
-		//			agent.honestAction=true;
-		//			if(sdb.tryHonestAgentAction())
-		//				agent.fitness+=SociallyDamagingBehavior.HONEST_PAYOFF;
-		//		}
-		//		else
-		//		{
-		//			agent.honestAction=false;
-		//			if(sdb.tryDisHonestAgentAction())
-		//			{
-		//				agent.fitness+=SociallyDamagingBehavior.DAMAGING_PAYOFF;
-		//				if(neigh.size()!=0)
-		//					((Human)neigh.get(state.random.nextInt(neigh.size()))).fitness-=SociallyDamagingBehavior.DAMAGING_PAYOFF;
-		//				sdb.legalPunishment(agent, neigh);
-		//			}
-		//		}
+						if(state.getMODEL()==state.MODEL4_AGGREGATION_MOVEMENT)
+							actionModel_3_4(agent, state, neigh, entryNeigh);
+						else
+							if(state.getMODEL()==state.MODEL5_MEMORY)
+								actionModel_5(agent, state, neigh, entryNeigh);
 	}
 
 	/**
@@ -72,14 +56,13 @@ public class Dishonest extends Behaviour{
 				agent.fitness+=SociallyDamagingBehavior.DAMAGING_PAYOFF;
 				if(allAgents.size()!=0)
 					((Human)allAgents.get(sdb.random.nextInt(allAgents.size()))).fitness-=SociallyDamagingBehavior.DAMAGING_PAYOFF;
-				sdb.legalPunishment(agent, neigh);
+				sdb.legalPunishment(agent, allAgents);
 			}
 		}
 	}
-
-
+	
 	/**
-	 * This is the action of agent with damaging on a proportional fitness
+	 * This is the action of agent with damaging on a proportional fitness on all agents
 	 */
 	public void actionModel_1(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
@@ -114,6 +97,50 @@ public class Dishonest extends Behaviour{
 						agent.fitness=+percF;
 
 						damaged.fitness-=percF;
+						sdb.legalPunishment(agent, sdb.human_being.getAllObjects());
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * This is the action of agent with damaging on a proportional fitness on
+	 * neighbours
+	 */
+	public void actionModel_2(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
+		
+		int action = sdb.chooseAction(agent.dna);
+		if(action == sdb.HONEST_ACTION)
+		{
+			agent.honestAction=true;
+			if(sdb.tryHonestAgentAction())
+				agent.fitness+=SociallyDamagingBehavior.HONEST_PAYOFF;
+		}
+		else
+		{
+			agent.honestAction=false;
+			if(sdb.tryDisHonestAgentAction())
+			{
+				double percF=(agent.fitness*sdb.getPERCENTAGE_PAYOFF_FITNESS())/100;
+
+				double var = 0;
+				
+				if(agent.neighFitness >= 1)
+				{
+					var = (sdb.random.nextInt((int) agent.neighFitness)+1) + sdb.random.nextDouble();
+				}
+
+				Human damaged;
+				for (int i = 1; i < entryNeigh.size(); i++) {
+					if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
+					{
+						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
+						damaged = ea.getH();
+						agent.fitness=+percF;
+
+						damaged.fitness-=percF;
 						sdb.legalPunishment(agent, neigh);
 						break;
 					}
@@ -126,7 +153,7 @@ public class Dishonest extends Behaviour{
 	 * This is the action of agent with damaging on a proportional fitness
 	 * with random movement and sigma
 	 */
-	public void actionModel_2_3(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
+	public void actionModel_3_4(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
 
 		int action = sdb.chooseAction(agent.dna);
 		if(action == sdb.HONEST_ACTION)
@@ -171,7 +198,7 @@ public class Dishonest extends Behaviour{
 	 * This is the action of agent with damaging on a proportional fitness
 	 * with random movement and sigma
 	 */
-	public void actionModel_4(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
+	public void actionModel_5(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
 
 		double dna;
 
