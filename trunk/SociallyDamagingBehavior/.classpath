@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/tesla/Documents/WorkspaceInformaticaLegislativa/SociallyDamagingBehavior/libraries/MASON.jar"/>
-	<classpathentry kind="lib" path="/Users/tesla/Documents/WorkspaceInformaticaLegislativa/SociallyDamagingBehavior/libraries/MasonUtil.jar"/>
-	<classpathentry kind="lib" path="/Users/tesla/Documents/WorkspaceInformaticaLegislativa/SociallyDamagingBehavior/libraries/jcommon-1.0.16.jar"/>
-	<classpathentry kind="lib" path="/Users/tesla/Documents/WorkspaceInformaticaLegislativa/SociallyDamagingBehavior/libraries/jfreechart-1.0.13.jar"/>
-	<classpathentry kind="lib" path="/Users/tesla/Documents/WorkspaceInformaticaLegislativa/SociallyDamagingBehavior/libraries/MasonCharts.jar"/>
+	<classpathentry kind="lib" path="/Users/tesla/Documents/InformaticaLegislativaSVN/SociallyDamagingBehavior/libraries/jcommon-1.0.16.jar"/>
+	<classpathentry kind="lib" path="/Users/tesla/Documents/InformaticaLegislativaSVN/SociallyDamagingBehavior/libraries/jfreechart-1.0.13.jar"/>
+	<classpathentry kind="lib" path="/Users/tesla/Documents/InformaticaLegislativaSVN/SociallyDamagingBehavior/libraries/MASON.jar"/>
+	<classpathentry kind="lib" path="/Users/tesla/Documents/InformaticaLegislativaSVN/SociallyDamagingBehavior/libraries/MasonCharts.jar"/>
+	<classpathentry kind="lib" path="/Users/tesla/Documents/InformaticaLegislativaSVN/SociallyDamagingBehavior/libraries/MasonUtil.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
