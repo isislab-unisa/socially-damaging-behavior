@@ -434,9 +434,16 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			if((sdbState.numHonest+sdbState.numDishonest)==sdbState.numHumanBeing-1)
 			{
 				if(behavior instanceof Honest)
+				{
 					sdbState.numHonest++;
+					sdbState.total_honest_fitness += this.fitness;
+				}
 				else
+				{
 					sdbState.numDishonest++;
+					sdbState.total_dishonest_fitness += this.fitness;
+				}
+				
 				if(sdbState.logging && sdbState.schedule.getSteps()<=sdbState.epochLimit)
 				{
 					sdbState.ps.println(sdbState.schedule.getSteps()+";"+sdbState.numHonest+";"+
