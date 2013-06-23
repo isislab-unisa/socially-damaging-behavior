@@ -25,7 +25,7 @@ public class SociallyDamagingBehavior extends SimState
 	public static double width = 200;
 	public static double height = 200;
 	public static int EPOCH = 100;
-	public static int EPOCH_NUMBER = 30;
+	public static int LOGGING_EPOCH_NUMBER = 30;
 	public int epochLimit;
 
 	public static int MODEL0_RANDOM_DAMAGING=0;
@@ -101,7 +101,7 @@ public class SociallyDamagingBehavior extends SimState
 		// neighborhood * 2 (which is about 4 lookups on average)
 		// would be optimal.  Go figure.
 		human_being = new Continuous2D(neighborhood/1.5,width,height);
-		epochLimit = EPOCH_NUMBER*EPOCH;
+		epochLimit = LOGGING_EPOCH_NUMBER*EPOCH;
 		//file logging
 		if(logging)
 			try {
@@ -339,8 +339,8 @@ public class SociallyDamagingBehavior extends SimState
 	public static void setPERCENT_HONEST(int pERCENT_HONEST) {PERCENT_HONEST = pERCENT_HONEST;}
 	public static int getEPOCH() {return EPOCH;}
 	public static void setEPOCH(int ePOCH) {EPOCH = ePOCH;}
-	public static int getEPOCH_NUMBER() {return EPOCH_NUMBER;}
-	public static void setEPOCH_NUMBER(int ePOCH_Num) {EPOCH_NUMBER = ePOCH_Num;}
+	public static int getLOGGING_EPOCH_NUMBER() {return LOGGING_EPOCH_NUMBER;}
+	public static void setLOGGING_EPOCH_NUMBER(int ePOCH_Num) {LOGGING_EPOCH_NUMBER = ePOCH_Num;}
 	public static int getMODEL() {return MODEL;}
 	public static void setMODEL(int model) {MODEL = model;}
 	public static double getSOCIAL_INFLUENCE() {return SOCIAL_INFLUENCE;}
