@@ -174,8 +174,6 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 							}
 						});
 						
-						System.out.println("fit "+fitness);
-						
 						neighFitness = 0;
 
 						for (Object o : b) {
@@ -428,6 +426,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			{
 				sdbState.numDishonest++;
 				sdbState.total_dishonest_fitness += this.fitness;
+				System.out.println(sdbState.total_dishonest_fitness);
 			}
 		}
 		else
@@ -442,6 +441,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 				{
 					sdbState.numDishonest++;
 					sdbState.total_dishonest_fitness += this.fitness;
+					System.out.println(sdbState.total_dishonest_fitness);
 				}
 				
 				if(sdbState.logging && sdbState.schedule.getSteps()<=sdbState.epochLimit)
