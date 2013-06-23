@@ -63,7 +63,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 		humans = theHuman.human_being;
 		agentPast = new ArrayDeque<PastData>();
 		loc = location;
-		fitness=state.random.nextInt(100);
+		fitness=Math.abs(state.random.nextInt(100));
 
 		this.dna=dna;
 		behavior=(dna>5)?new Honest():new Dishonest();
@@ -426,7 +426,6 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			{
 				sdbState.numDishonest++;
 				sdbState.total_dishonest_fitness += this.fitness;
-				System.out.println(sdbState.total_dishonest_fitness);
 			}
 		}
 		else
@@ -441,7 +440,6 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 				{
 					sdbState.numDishonest++;
 					sdbState.total_dishonest_fitness += this.fitness;
-					System.out.println(sdbState.total_dishonest_fitness);
 				}
 				
 				if(sdbState.logging && sdbState.schedule.getSteps()<=sdbState.epochLimit)
