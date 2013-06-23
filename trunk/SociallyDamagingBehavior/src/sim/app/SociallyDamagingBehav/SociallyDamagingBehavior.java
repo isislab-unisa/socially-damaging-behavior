@@ -22,6 +22,7 @@ public class SociallyDamagingBehavior extends SimState
 	public static double width = 200;
 	public static double height = 200;
 	public static int EPOCH = 100;
+	public static int EPOCH_NUMBER = 30;
 
 	public static int MODEL0_RANDOM_DAMAGING=0;
 	public static int MODEL1_PROPORTIONAL_DAMAGING_ALLAGENTS=1;
@@ -334,6 +335,8 @@ public class SociallyDamagingBehavior extends SimState
 	public static void setPERCENT_HONEST(int pERCENT_HONEST) {PERCENT_HONEST = pERCENT_HONEST;}
 	public static int getEPOCH() {return EPOCH;}
 	public static void setEPOCH(int ePOCH) {EPOCH = ePOCH;}
+	public static int getEPOCH_NUMBER() {return EPOCH_NUMBER;}
+	public static void setEPOCH_NUMBER(int ePOCH_Num) {EPOCH_NUMBER = ePOCH_Num;}
 	public static int getMODEL() {return MODEL;}
 	public static void setMODEL(int model) {MODEL = model;}
 	public static double getSOCIAL_INFLUENCE() {return SOCIAL_INFLUENCE;}
