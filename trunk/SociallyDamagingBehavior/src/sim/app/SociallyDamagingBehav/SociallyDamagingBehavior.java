@@ -24,11 +24,12 @@ public class SociallyDamagingBehavior extends SimState
 	public static int EPOCH = 100;
 
 	public static int MODEL0_RANDOM_DAMAGING=0;
-	public static int MODEL1_PROPORTIONAL_DAMAGING=1;
-	public static int MODEL2_RANDOM_MOVEMENT=2;
-	public static int MODEL3_AGGREGATION_MOVEMENT=3;
-	public static int MODEL4_MEMORY=4;
-	public static int MODEL = MODEL4_MEMORY;
+	public static int MODEL1_PROPORTIONAL_DAMAGING_ALLAGENTS=1;
+	public static int MODEL2_PROPORTIONAL_DAMAGING_NEIGH=2;
+	public static int MODEL3_RANDOM_MOVEMENT=3;
+	public static int MODEL4_AGGREGATION_MOVEMENT=4;
+	public static int MODEL5_MEMORY=5;
+	public static int MODEL = MODEL5_MEMORY;
 	public static double neighborhood = 10;
 	public static double MIN_AOI_AGGREGATION_MODEL3 = 5;
 	public static double MAX_AOI_AGGREGATION_MODEL3 = 10;
@@ -39,11 +40,11 @@ public class SociallyDamagingBehavior extends SimState
 	public static double SOCIAL_INFLUENCE = 0.010;
 	public static int PERCENTAGE_PAYOFF_FITNESS=10;
 
-	public static double PUNISHIMENT_PROB = 1.0;
-	public static int PUNISHIMENT_STRICT = 1; 
-	public static int PUNISHIMENT_FAIR = 2;
-	public static int PUNISHIMENT_LAX = 3;
-	public int PUNISHIMENT_SEVERITY = PUNISHIMENT_FAIR;
+	public static double PUNISHMENT_PROB = 1.0;
+	public static int PUNISHMENT_STRICT = 1; 
+	public static int PUNISHMENT_FAIR = 2;
+	public static int PUNISHMENT_LAX = 3;
+	public int PUNISHMENT_SEVERITY = PUNISHMENT_FAIR;
 
 	public static double HONEST_PAYOFF = 1.0;
 	public static double HONEST_PROB = 1.0;
@@ -72,6 +73,8 @@ public class SociallyDamagingBehavior extends SimState
 	public int numHonest = 0;
 	public int dishonest = 0;
 	public int numDishonest = 0;
+	public double total_honest_fitness = 0;
+	public double total_dishonest_fitness = 0;
 	
 
 	/** Creates a SDB simulation with the given random number seed. */
@@ -224,11 +227,11 @@ public class SociallyDamagingBehavior extends SimState
 	 */
 	public boolean legalPunishment(Human a,Bag neigh){
 
-		double prob_pun=SociallyDamagingBehavior.PUNISHIMENT_PROB;
-		// neighborhood influence punishment only for model 2 3 4
-		if(SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL2_RANDOM_MOVEMENT ||
-				SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL3_AGGREGATION_MOVEMENT ||
-				SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL4_MEMORY )
+		double prob_pun=SociallyDamagingBehavior.PUNISHMENT_PROB;
+		// neighborhood influence punishment only for model 3 4 5
+		if(SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL3_RANDOM_MOVEMENT ||
+				SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL4_AGGREGATION_MOVEMENT ||
+				SociallyDamagingBehavior.getMODEL()==SociallyDamagingBehavior.MODEL5_MEMORY )
 
 		{
 			if(neigh.size()>0)
@@ -247,8 +250,8 @@ public class SociallyDamagingBehavior extends SimState
 				double perc_DH=(DH_neigh*100)/tot;
 				double p_perc_h=perc_H/100;
 				double p_perc_dh=perc_DH/100;
-				if(H_neigh>DH_neigh) prob_pun=SociallyDamagingBehavior.PUNISHIMENT_PROB+p_perc_h;
-				else if(H_neigh<DH_neigh) prob_pun=(SociallyDamagingBehavior.PUNISHIMENT_PROB-p_perc_dh);
+				if(H_neigh>DH_neigh) prob_pun=SociallyDamagingBehavior.PUNISHMENT_PROB+p_perc_h;
+				else if(H_neigh<DH_neigh) prob_pun=(SociallyDamagingBehavior.PUNISHMENT_PROB-p_perc_dh);
 
 			}
 		}	
@@ -257,11 +260,11 @@ public class SociallyDamagingBehavior extends SimState
 		double random_pun=this.random.nextDouble();
 		if(random_pun < prob_pun)
 		{
-			if(PUNISHIMENT_SEVERITY==PUNISHIMENT_FAIR)
+			if(PUNISHMENT_SEVERITY==PUNISHMENT_FAIR)
 			{
 				a.fitness-=DAMAGING_PAYOFF;
 			}else
-				if(PUNISHIMENT_SEVERITY==PUNISHIMENT_STRICT)
+				if(PUNISHMENT_SEVERITY==PUNISHMENT_STRICT)
 				{
 					a.fitness-=DAMAGING_PAYOFF*2;
 				}else
@@ -321,8 +324,8 @@ public class SociallyDamagingBehavior extends SimState
 	public static void setDAMAGING_PAYOFF_PROB(double dAMAGING_PAYOFF_PROB) {DAMAGING_PAYOFF_PROB = dAMAGING_PAYOFF_PROB;}
 	public static double getDAMAGING_PAYOFF() {return DAMAGING_PAYOFF;}
 	public static void setDAMAGING_PAYOFF(double dAMAGING_PAYOFF) {DAMAGING_PAYOFF = dAMAGING_PAYOFF;}
-	public static double getPUNISHIMENT_PROB() {return PUNISHIMENT_PROB;}
-	public static void setPUNISHIMENT_PROB(double pUNISHIMENT_PROB) {PUNISHIMENT_PROB = pUNISHIMENT_PROB;}
+	public static double getPUNISHMENT_PROB() {return PUNISHMENT_PROB;}
+	public static void setPUNISHMENT_PROB(double pUNISHMENT_PROB) {PUNISHMENT_PROB = pUNISHMENT_PROB;}
 	public static double getHONEST_PAYOFF() {return HONEST_PAYOFF;}
 	public static void setHONEST_PAYOFF(double hONEST_PAYOFF) {HONEST_PAYOFF = hONEST_PAYOFF;}
 	public static double getHONEST_PROB() {return HONEST_PROB;}
@@ -335,8 +338,8 @@ public class SociallyDamagingBehavior extends SimState
 	public static void setMODEL(int model) {MODEL = model;}
 	public static double getSOCIAL_INFLUENCE() {return SOCIAL_INFLUENCE;}
 	public static void setSOCIAL_INFLUENCE(double sOCIAL_INFLUENCE) {SOCIAL_INFLUENCE = sOCIAL_INFLUENCE;}
-	public int getPUNISHIMENT_SEVERITY() {return PUNISHIMENT_SEVERITY;}
-	public void setPUNISHIMENT_SEVERITY(int pUNISHIMENT_SEVERITY) {PUNISHIMENT_SEVERITY = pUNISHIMENT_SEVERITY;}
+	public int getPUNISHMENT_SEVERITY() {return PUNISHMENT_SEVERITY;}
+	public void setPUNISHMENT_SEVERITY(int pUNISHMENT_SEVERITY) {PUNISHMENT_SEVERITY = pUNISHMENT_SEVERITY;}
 	public static int getPERCENTAGE_PAYOFF_FITNESS() {return PERCENTAGE_PAYOFF_FITNESS;}
 	public static void setPERCENTAGE_PAYOFF_FITNESS(int pERCENTAGE_PAYOFF_FITNESS) {PERCENTAGE_PAYOFF_FITNESS = pERCENTAGE_PAYOFF_FITNESS;}
 	public double getCohesion() {return cohesion;}
