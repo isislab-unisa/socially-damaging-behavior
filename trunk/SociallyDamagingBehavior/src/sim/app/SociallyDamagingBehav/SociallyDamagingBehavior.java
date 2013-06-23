@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Comparator;
+
+import javax.naming.LimitExceededException;
+
 import sim.engine.*;
 import sim.util.*;
 import sim.field.continuous.*;
@@ -23,6 +26,7 @@ public class SociallyDamagingBehavior extends SimState
 	public static double height = 200;
 	public static int EPOCH = 100;
 	public static int EPOCH_NUMBER = 30;
+	public int epochLimit;
 
 	public static int MODEL0_RANDOM_DAMAGING=0;
 	public static int MODEL1_PROPORTIONAL_DAMAGING_ALLAGENTS=1;
@@ -97,7 +101,7 @@ public class SociallyDamagingBehavior extends SimState
 		// neighborhood * 2 (which is about 4 lookups on average)
 		// would be optimal.  Go figure.
 		human_being = new Continuous2D(neighborhood/1.5,width,height);
-
+		epochLimit = EPOCH_NUMBER*EPOCH;
 		//file logging
 		if(logging)
 			try {
