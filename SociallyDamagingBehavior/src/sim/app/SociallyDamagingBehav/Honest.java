@@ -13,7 +13,7 @@ import sim.util.Double2D;
 public class Honest extends Behaviour{
 
 	@Override
-	public void action(Human agent, SociallyDamagingBehavior state, Bag neigh, Bag entryNeigh) 
+	public void action(Human agent, SociallyDamagingBehavior state, Bag neigh) 
 	{		
 		if(state.getMODEL()==state.MODEL0_RANDOM_DAMAGING)
 			actionModel_0(agent, state, neigh);
@@ -22,16 +22,16 @@ public class Honest extends Behaviour{
 				actionModel_1(agent, state, neigh);
 			else
 				if(state.getMODEL()==state.MODEL2_PROPORTIONAL_DAMAGING_NEIGH)
-					actionModel_2(agent, state, neigh, entryNeigh);
+					actionModel_2(agent, state, neigh);
 				else
 					if(state.getMODEL()==state.MODEL3_RANDOM_MOVEMENT)
-						actionModel_3_4(agent, state, neigh, entryNeigh);
+						actionModel_3_4(agent, state, neigh);
 					else
 						if(state.getMODEL()==state.MODEL4_AGGREGATION_MOVEMENT)
-							actionModel_3_4(agent, state, neigh, entryNeigh);
+							actionModel_3_4(agent, state, neigh);
 						else
 							if(state.getMODEL()==state.MODEL5_MEMORY)
-							actionModel_5(agent, state, neigh, entryNeigh);		
+							actionModel_5(agent, state, neigh);		
 		//		SociallyDamagingBehavior sdb=(SociallyDamagingBehavior)state;
 		//		int action = sdb.chooseAction(agent.dna);
 		//		if(action == 1)
@@ -103,26 +103,56 @@ public class Honest extends Behaviour{
 				{
 					var = (sdb.random.nextInt((int) sdb.lastTotalFitness)+1) + sdb.random.nextDouble();
 				}
-
+				
 				Human damaged;
-				for (int i = 1; i < sdb.lastAllHumans.size(); i++) {
-					if(((EntryAgent<Double,Human>)(sdb.lastAllHumans.get(i))).getFitSum()>var)
+				boolean damageDone = false;
+				for (int i = 1; i < sdb.lastAllHonest.size(); i++) {
+					if(((EntryAgent<Double,Human>)(sdb.lastAllHonest.get(i))).getFitSum()>var)
 					{
-						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)sdb.lastAllHumans.get(i-1);
+						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)sdb.lastAllHonest.get(i-1);
 						damaged = ea.getH();
 
 						agent.fitness=+percF;
 
 						damaged.fitness-=percF;
 						sdb.legalPunishment(agent, sdb.human_being.getAllObjects());
+						damageDone = true;
 						break;
 					}
 				}
+				if(!damageDone)
+					for (int i = 1; i < sdb.lastAllDishonest.size(); i++) {
+						if(((EntryAgent<Double,Human>)(sdb.lastAllDishonest.get(i))).getFitSum()>var)
+						{
+							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)sdb.lastAllDishonest.get(i-1);
+							damaged = ea.getH();
+	
+							agent.fitness=+percF;
+	
+							damaged.fitness-=percF;
+							sdb.legalPunishment(agent, sdb.human_being.getAllObjects());
+							break;
+						}
+					}
+
+//				for (int i = 1; i < sdb.lastAllHumans.size(); i++) {
+//					if(((EntryAgent<Double,Human>)(sdb.lastAllHumans.get(i))).getFitSum()>var)
+//					{
+//						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)sdb.lastAllHumans.get(i-1);
+//						damaged = ea.getH();
+//
+//						agent.fitness=+percF;
+//
+//						damaged.fitness-=percF;
+//						sdb.legalPunishment(agent, sdb.human_being.getAllObjects());
+//						break;
+//					}
+//				}
 			}
 		}
 	}
 	
-	public void actionModel_2(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
+	public void actionModel_2(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
 		int action = sdb.chooseAction(agent.dna);
 		if(action == sdb.HONEST_ACTION)
@@ -146,18 +176,45 @@ public class Honest extends Behaviour{
 				}
 
 				Human damaged;
-				for (int i = 1; i < entryNeigh.size(); i++) {
-					if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
+				boolean damageDone = false;
+				for (int i = 1; i < agent.entryNeighHonest.size(); i++) {
+					if(((EntryAgent<Double,Human>)(agent.entryNeighHonest.get(i))).getFitSum()>var)
 					{
-						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
+						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeighHonest.get(i-1);
 						damaged = ea.getH();
 						agent.fitness=+percF;
 
 						damaged.fitness-=percF;
 						sdb.legalPunishment(agent, neigh);
+						damageDone = true;
 						break;
 					}
 				}
+				if(!damageDone)
+					for (int i = 1; i < agent.entryNeighDishonest.size(); i++) {
+						if(((EntryAgent<Double,Human>)(agent.entryNeighDishonest.get(i))).getFitSum()>var)
+						{
+							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeighDishonest.get(i-1);
+							damaged = ea.getH();
+							agent.fitness=+percF;
+
+							damaged.fitness-=percF;
+							sdb.legalPunishment(agent, neigh);
+							break;
+						}
+					}
+//				for (int i = 1; i < entryNeigh.size(); i++) {
+//					if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
+//					{
+//						EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
+//						damaged = ea.getH();
+//						agent.fitness=+percF;
+//
+//						damaged.fitness-=percF;
+//						sdb.legalPunishment(agent, neigh);
+//						break;
+//					}
+//				}
 			}
 		}
 	}
@@ -166,7 +223,7 @@ public class Honest extends Behaviour{
 	 * This is the action of agent with damaging on a proportional fitness
 	 * with random movement and sigma
 	 */
-	public void actionModel_3_4(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
+	public void actionModel_3_4(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
 		int action = sdb.chooseAction(agent.dna);
 		if(action == sdb.HONEST_ACTION)
@@ -191,19 +248,46 @@ public class Honest extends Behaviour{
 					}
 
 					Human damaged;
-					for (int i = 1; i < entryNeigh.size(); i++) {
-						if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
+					boolean damageDone = false;
+					for (int i = 1; i < agent.entryNeighHonest.size(); i++) {
+						if(((EntryAgent<Double,Human>)(agent.entryNeighHonest.get(i))).getFitSum()>var)
 						{
-							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
+							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeighHonest.get(i-1);
 							damaged = ea.getH();
-
 							agent.fitness=+percF;
 
 							damaged.fitness-=percF;
 							sdb.legalPunishment(agent, neigh);
+							damageDone = true;
 							break;
 						}
 					}
+					if(!damageDone)
+						for (int i = 1; i < agent.entryNeighDishonest.size(); i++) {
+							if(((EntryAgent<Double,Human>)(agent.entryNeighDishonest.get(i))).getFitSum()>var)
+							{
+								EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeighDishonest.get(i-1);
+								damaged = ea.getH();
+								agent.fitness=+percF;
+
+								damaged.fitness-=percF;
+								sdb.legalPunishment(agent, neigh);
+								break;
+							}
+						}
+//					for (int i = 1; i < entryNeigh.size(); i++) {
+//						if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
+//						{
+//							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
+//							damaged = ea.getH();
+//
+//							agent.fitness=+percF;
+//
+//							damaged.fitness-=percF;
+//							sdb.legalPunishment(agent, neigh);
+//							break;
+//						}
+//					}
 				}
 		}
 	}
@@ -212,7 +296,7 @@ public class Honest extends Behaviour{
 	 * This is the action of agent with damaging on a proportional fitness
 	 * with random movement and sigma
 	 */
-	public void actionModel_5(Human agent, SociallyDamagingBehavior sdb, Bag neigh, Bag entryNeigh){
+	public void actionModel_5(Human agent, SociallyDamagingBehavior sdb, Bag neigh){
 
 		double dna;
 		if(agent.punprob!=0.0)
@@ -248,10 +332,12 @@ public class Honest extends Behaviour{
 					}
 
 					Human damaged;
-					for (int i = 1; i < entryNeigh.size(); i++) {
-						if(((EntryAgent<Double,Human>)(entryNeigh.get(i))).getFitSum()>var)
+					boolean damageDone = false;
+					
+					for (int i = 1; i < agent.entryNeighHonest.size(); i++) {
+						if(((EntryAgent<Double,Human>)(agent.entryNeighHonest.get(i))).getFitSum()>var)
 						{
-							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)entryNeigh.get(i-1);
+							EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeighHonest.get(i-1);
 							damaged = ea.getH();
 
 							agent.fitness=+percF;
@@ -265,10 +351,33 @@ public class Honest extends Behaviour{
 								agent.numNeighPunished++;
 								agent.isPunished = true;
 							}
-
+							damageDone = true;
 							break;
 						}
 					}
+					
+					if(!damageDone)
+						for (int i = 1; i < agent.entryNeighDishonest.size(); i++) {
+							if(((EntryAgent<Double,Human>)(agent.entryNeighDishonest.get(i))).getFitSum()>var)
+							{
+								EntryAgent<Double, Human> ea = (EntryAgent<Double, Human>)agent.entryNeighDishonest.get(i-1);
+								damaged = ea.getH();
+
+								agent.fitness=+percF;
+								agent.numNeighDamager++;
+								agent.isActionDishonest = true;
+
+								damaged.fitness-=percF;
+
+								if(sdb.legalPunishment(agent, neigh))
+								{
+									agent.numNeighPunished++;
+									agent.isPunished = true;
+								}
+
+								break;
+							}
+						}
 				}
 		}
 	}

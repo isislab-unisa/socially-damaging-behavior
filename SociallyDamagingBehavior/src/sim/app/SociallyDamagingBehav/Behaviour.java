@@ -11,7 +11,7 @@ import sim.util.Double2D;
  */
 public abstract class Behaviour {
 
-	public abstract void action(Human agent, SociallyDamagingBehavior state, Bag neigh, Bag entryNeigh);
+	public abstract void action(Human agent, SociallyDamagingBehavior state, Bag neigh);
 	public abstract void calculateCEI(Human a, SociallyDamagingBehavior sdb, Bag n);
 	public abstract void socialInfluence(Human agent,SimState state,Bag neigh);
 	public abstract Double2D move(SimState state, Double2D loc, Bag neigh);

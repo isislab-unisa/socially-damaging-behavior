@@ -39,6 +39,8 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 	
 	//Model 2-3
 	public double neighFitness;
+	Bag entryNeighHonest;
+	Bag entryNeighDishonest;
 	//Model 2-3
 	
 	//Model 4-5
@@ -93,7 +95,9 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 
 			Bag b;
 			Bag entryNeigh = new Bag();
-
+			entryNeighHonest = new Bag();
+			entryNeighDishonest = new Bag();
+			
 			if(sdbState.getMODEL()==sdbState.MODEL0_RANDOM_DAMAGING)
 			{
 				b = getNeighbors();
@@ -107,56 +111,72 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 					dx = 0;
 					dy = 0;
 					
-					if(sdbState.allHumans.size()<sdbState.numHumanBeing){
+					if((sdbState.allHonest.size()+sdbState.allDishonest.size())<sdbState.numHumanBeing){
 						double tot = sdbState.totalFitness+this.fitness;
-						sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
+						if(this.behavior instanceof Honest)
+							sdbState.allHonest.add(new EntryAgent<Double, Human>(tot, this));
+						else
+							sdbState.allDishonest.add(new EntryAgent<Double, Human>(tot, this));
 						sdbState.totalFitness = tot;
 					}
 					else
 					{
 						double tot = sdbState.totalFitness+this.fitness;
-						sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
-						sdbState.allHumans.sort(new Comparator<EntryAgent<Double, Human>>() {
+						if(this.behavior instanceof Honest)
+							sdbState.allHonest.add(new EntryAgent<Double, Human>(tot, this));
+						else
+							sdbState.allDishonest.add(new EntryAgent<Double, Human>(tot, this));
+						
+						sdbState.allHonest.sort(new Comparator<EntryAgent<Double, Human>>() {
 							@Override
 							public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
-								if(o1.getFitSum()>o2.getFitSum()) return 1;
-								else if(o1.getFitSum()<o2.getFitSum()) return -1;
+								if(o1.getH().dna<o2.getH().dna) return 1;
+								else if(o1.getH().dna>o2.getH().dna) return -1;
 								return 0;
 							}
 						});
+						
+						sdbState.allDishonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+							@Override
+							public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+								if(o1.getH().dna<o2.getH().dna) return 1;
+								else if(o1.getH().dna>o2.getH().dna) return -1;
+								return 0;
+							}
+						});
+						
 						sdbState.totalFitness = tot;
-						sdbState.lastAllHumans = sdbState.allHumans;
+						sdbState.lastAllHonest = sdbState.allHonest;
+						sdbState.lastAllDishonest = sdbState.allDishonest;
 						sdbState.lastTotalFitness = sdbState.totalFitness;
-						sdbState.allHumans = new Bag();
+						sdbState.allHonest = new Bag();
+						sdbState.allDishonest = new Bag();
 						sdbState.totalFitness = 0;
 					}
+//					if(sdbState.allHumans.size()<sdbState.numHumanBeing){
+//						double tot = sdbState.totalFitness+this.fitness;
+//						sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
+//						sdbState.totalFitness = tot;
+//					}
+//					else
+//					{
+//						double tot = sdbState.totalFitness+this.fitness;
+//						sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
+//						sdbState.allHumans.sort(new Comparator<EntryAgent<Double, Human>>() {
+//							@Override
+//							public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+//								if(o1.getFitSum()>o2.getFitSum()) return 1;
+//								else if(o1.getFitSum()<o2.getFitSum()) return -1;
+//								return 0;
+//							}
+//						});
+//						sdbState.totalFitness = tot;
+//						sdbState.lastAllHumans = sdbState.allHumans;
+//						sdbState.lastTotalFitness = sdbState.totalFitness;
+//						sdbState.allHumans = new Bag();
+//						sdbState.totalFitness = 0;
+//					}
 
-					if(state.schedule.getSteps()!=0)
-					{
-						if(sdbState.allHumans.size()<sdbState.numHumanBeing){
-							double tot = sdbState.totalFitness+this.fitness;
-							sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
-							sdbState.totalFitness = tot;
-						}
-						else
-						{
-							double tot = sdbState.totalFitness+this.fitness;
-							sdbState.allHumans.add(new EntryAgent<Double, Human>(tot, this));
-							sdbState.allHumans.sort(new Comparator<EntryAgent<Double, Human>>() {
-								@Override
-								public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
-									if(o1.getFitSum()>o2.getFitSum()) return 1;
-									else if(o1.getFitSum()<o2.getFitSum()) return -1;
-									return 0;
-								}
-							});
-							sdbState.totalFitness = tot;
-							sdbState.lastAllHumans = sdbState.allHumans;
-							sdbState.lastTotalFitness = sdbState.totalFitness;
-							sdbState.allHumans = new Bag();
-							sdbState.totalFitness = 0;
-						}
-					}
 				}
 				else
 					if(sdbState.getMODEL()==sdbState.MODEL2_PROPORTIONAL_DAMAGING_NEIGH)
@@ -179,8 +199,30 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 						for (Object o : b) {
 							Human h = (Human)o;
 							neighFitness += h.fitness;
-							entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+							//entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+							if(h.behavior instanceof Honest)
+								entryNeighHonest.add(new EntryAgent<Double, Human>(neighFitness, h));
+							else
+								entryNeighDishonest.add(new EntryAgent<Double, Human>(neighFitness, h));
 						}
+						
+						entryNeighHonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+							@Override
+							public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+								if(o1.getH().dna<o2.getH().dna) return 1;
+								else if(o1.getH().dna>o2.getH().dna) return -1;
+								return 0;
+							}
+						});
+						
+						entryNeighDishonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+							@Override
+							public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+								if(o1.getH().dna<o2.getH().dna) return 1;
+								else if(o1.getH().dna>o2.getH().dna) return -1;
+								return 0;
+							}
+						});
 					}
 					else
 						if(sdbState.getMODEL()==sdbState.MODEL3_RANDOM_MOVEMENT)
@@ -208,14 +250,36 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 									return 0;
 								}
 							});
-	
+							
 							neighFitness = 0;
-	
+							
 							for (Object o : b) {
 								Human h = (Human)o;
 								neighFitness += h.fitness;
-								entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+								//entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+								if(h.behavior instanceof Honest)
+									entryNeighHonest.add(new EntryAgent<Double, Human>(neighFitness, h));
+								else
+									entryNeighDishonest.add(new EntryAgent<Double, Human>(neighFitness, h));
 							}
+							
+							entryNeighHonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+								@Override
+								public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+									if(o1.getH().dna<o2.getH().dna) return 1;
+									else if(o1.getH().dna>o2.getH().dna) return -1;
+									return 0;
+								}
+							});
+							
+							entryNeighDishonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+								@Override
+								public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+									if(o1.getH().dna<o2.getH().dna) return 1;
+									else if(o1.getH().dna>o2.getH().dna) return -1;
+									return 0;
+								}
+							});
 						}
 						else
 							if(sdbState.getMODEL()==sdbState.MODEL4_AGGREGATION_MOVEMENT)
@@ -253,14 +317,36 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 										return 0;
 									}
 								});
-	
+								
 								neighFitness = 0;
-	
+								
 								for (Object o : b) {
 									Human h = (Human)o;
 									neighFitness += h.fitness;
-									entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+									//entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+									if(h.behavior instanceof Honest)
+										entryNeighHonest.add(new EntryAgent<Double, Human>(neighFitness, h));
+									else
+										entryNeighDishonest.add(new EntryAgent<Double, Human>(neighFitness, h));
 								}
+								
+								entryNeighHonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+									@Override
+									public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+										if(o1.getH().dna<o2.getH().dna) return 1;
+										else if(o1.getH().dna>o2.getH().dna) return -1;
+										return 0;
+									}
+								});
+								
+								entryNeighDishonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+									@Override
+									public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+										if(o1.getH().dna<o2.getH().dna) return 1;
+										else if(o1.getH().dna>o2.getH().dna) return -1;
+										return 0;
+									}
+								});
 								
 								Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
 								Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
@@ -339,14 +425,36 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 										return 0;
 									}
 								});
-	
+								
 								neighFitness = 0;
-	
+								
 								for (Object o : b) {
 									Human h = (Human)o;
 									neighFitness += h.fitness;
-									entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+									//entryNeigh.add(new EntryAgent<Double, Human>(neighFitness, h));
+									if(h.behavior instanceof Honest)
+										entryNeighHonest.add(new EntryAgent<Double, Human>(neighFitness, h));
+									else
+										entryNeighDishonest.add(new EntryAgent<Double, Human>(neighFitness, h));
 								}
+								
+								entryNeighHonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+									@Override
+									public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+										if(o1.getH().dna<o2.getH().dna) return 1;
+										else if(o1.getH().dna>o2.getH().dna) return -1;
+										return 0;
+									}
+								});
+								
+								entryNeighDishonest.sort(new Comparator<EntryAgent<Double, Human>>() {
+									@Override
+									public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
+										if(o1.getH().dna<o2.getH().dna) return 1;
+										else if(o1.getH().dna>o2.getH().dna) return -1;
+										return 0;
+									}
+								});
 								
 								Double2D avoid = behavior.avoidance(this,b,sdbState.human_being);
 								Double2D cohe = behavior.cohesion(this,b,sdbState.human_being);
@@ -365,7 +473,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 								}
 							}
 
-			behavior.action(this, sdbState, b, entryNeigh);
+			behavior.action(this, sdbState, b);
 
 			//Social Influence
 			behavior.calculateCEI(this, sdbState, b);
@@ -379,6 +487,7 @@ public class Human extends OvalPortrayal2D implements Steppable//, sim.portrayal
 			sdbState.schedule.scheduleOnce(this);
 		}
 	}
+	
 	
 	class Direction extends ArrayList<Human> implements Comparable
 	{
