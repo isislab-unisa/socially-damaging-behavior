@@ -69,7 +69,11 @@ public class SociallyDamagingBehavior extends SimState
 	public double totalFitness = 0;
 	public double lastTotalFitness = 0;
 	public Bag allHumans;
+	public Bag allHonest;
+	public Bag allDishonest;
 	public Bag lastAllHumans;
+	public Bag lastAllHonest;
+	public Bag lastAllDishonest;
 	public int honestAction = 0;
 	public int numHonestAction = 0;
 	public int numDishonestAction = 0;
@@ -119,7 +123,9 @@ public class SociallyDamagingBehavior extends SimState
 		
 		//System.out.println("Honest="+hon+"     DisHon="+disHon);
 		allHumans = new Bag();
-
+		allHonest = new Bag();
+		allDishonest = new Bag();
+		
 		//Create Honest Agent
 		for (int x=0;x<honest;x++) 
 		{
@@ -133,7 +139,7 @@ public class SociallyDamagingBehavior extends SimState
 			hAgent.humans = human_being;
 			hAgent.theHuman = this;
 
-			allHumans.add(new EntryAgent<Double, Human>(0.0, hAgent));//////Model 2-3
+			allHumans.add(new EntryAgent<Double, Human>(0.0, hAgent));//////Model 1
 
 			//schedule.scheduleRepeating(hAgent);
 			schedule.scheduleOnce(hAgent);
@@ -153,12 +159,12 @@ public class SociallyDamagingBehavior extends SimState
 			dhAgent.humans = human_being;
 			dhAgent.theHuman = this;
 
-			allHumans.add(new EntryAgent<Double, Human>(0.0, dhAgent));//////Model 2-3
-
+			allHumans.add(new EntryAgent<Double, Human>(0.0, dhAgent));//////Model 1
+			
 			schedule.scheduleOnce(dhAgent);
 		}
 
-		//////Model 2-3
+		//////Model 1
 		allHumans.sort(new Comparator<EntryAgent<Double, Human>>() {
 			@Override
 			public int compare(EntryAgent<Double, Human> o1, EntryAgent<Double, Human> o2) {
@@ -176,6 +182,8 @@ public class SociallyDamagingBehavior extends SimState
 		}
 
 		lastAllHumans = allHumans;
+		lastAllHonest = allHonest;
+		lastAllDishonest = allDishonest;
 		allHumans = new Bag();
 		lastTotalFitness = totalFitness;
 		totalFitness = 0;
